@@ -91,9 +91,9 @@ $publicKey = Rsa::fromSpki('MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCg...');
 
 //如果是公钥证书模式，可以在工厂方法内传入 `$appCertSn` 及 `$rootCertSn`
 // $appCertFilePath = '/my/cert/app_cert.crt';
-// $appCertSn = \EasyAlipay::Helpers::sn($appCertFilePath);
-// $rootCertFilePath = '/alipay/cert/alipayRootCert.crt';
-// $rootCertSn = \EasyAlipay::Helpers::sn($appCertFilePath);
+// $appCertSn = \EasyAlipay\Helpers::sn($appCertFilePath);
+// $alipayRootCertFilePath = '/alipay/cert/alipayRootCert.crt';
+// $alipayRootCertSn = \EasyAlipay\Helpers::sn($alipayRootCertFilePath);
 
 // 工厂方法构造一个实例
 $instance = Builder::factory([
@@ -103,7 +103,7 @@ $instance = Builder::factory([
         'app_id' => $appId,
         // 'app_auth_token' => $appAuthToken,
         // 'app_cert_sn' => $appCertSn,
-        // 'alipay_root_cert_sn' => $rootCertSn,
+        // 'alipay_root_cert_sn' => $alipayRootCertSn,
     ],
 ]);
 ```
