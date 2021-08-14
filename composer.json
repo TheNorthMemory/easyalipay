@@ -1,0 +1,40 @@
+{
+    "name": "easyalipay/easyalipay",
+    "version": "0.1.0",
+    "description": "[A]Sync Chainable Alipay OpenAPI SDK for PHP",
+    "type": "library",
+    "keywords": [
+        "alipay",
+        "openapi-chainable",
+        "aes-ecb"
+    ],
+    "authors": [
+        {
+            "name": "James ZHNAG",
+            "homepage": "https://github.com/TheNorthMemory"
+        }
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=7.2",
+        "ext-curl": "*",
+        "ext-libxml": "*",
+        "ext-simplexml": "*",
+        "ext-openssl": "*",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.5.5 || ^9.3.5",
+        "phpstan/phpstan": "^0.12.89"
+    },
+    "autoload": {
+        "psr-4": {
+            "EasyAlipay\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "EasyAlipay\\Tests\\": "tests/"
+        }
+    }
+}
