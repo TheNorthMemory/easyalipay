@@ -89,13 +89,21 @@ $publicKey = Rsa::fromSpki('MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCg...');
 // 也支持以下方式，须保证`public_key.pem`为完整X509格式
 // $publicKey = Rsa::from('file:///the/alipay/public_key.pem');
 
+//如果是公钥证书模式，可以在工厂方法内传入 `$appCertSn` 及 `$rootCertSn`
+// $appCertFilePath = '/my/cert/app_cert.crt';
+// $appCertSn = \EasyAlipay::Helpers::sn($appCertFilePath);
+// $rootCertFilePath = '/alipay/cert/alipayRootCert.crt';
+// $rootCertSn = \EasyAlipay::Helpers::sn($appCertFilePath);
+
 // 工厂方法构造一个实例
 $instance = Builder::factory([
     'privateKey' => $privateKey,
     'publicKey' => $publicKey,
     'params' => [
         'app_id' => $appId,
-        // 'app_auth_token' => $appAuthToken
+        // 'app_auth_token' => $appAuthToken,
+        // 'app_cert_sn' => $appCertSn,
+        // 'alipay_root_cert_sn' => $rootCertSn,
     ],
 ]);
 ```
@@ -109,8 +117,6 @@ $instance = Builder::factory([
 - `params['app_auth_token' => $appAuthToken]` 为你的`ISV`模式的授权`token`，按需配置；
 
 **注：** `OpenAPI` 以及 `GuzzleHttp\Client` 的 `array $config` 初始化参数，均融合在一个型参上。
-
-## APIv3
 
 ### 统一收单线下交易查询
 
