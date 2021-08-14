@@ -19,7 +19,7 @@ use function preg_match_all;
 use function stripos;
 
 /**
- * Provides easy used methods using in this project.
+ * Provide some useful functions for the catificate(s) operations.
  */
 class Helpers
 {
@@ -30,7 +30,10 @@ class Helpers
     private const X509_ASN1_CERT_ISSUER = 'issuer';
     private const X509_ASN1_CERT_SERIAL = 'serialNumber';
 
+    /** @var string `pem` identify */
     public const CERT_PEM = 'pem';
+
+    /** @var string attributes by `openssl_x509_parse` */
     public const CERT_ATTR = 'attr';
 
     /**
@@ -55,7 +58,7 @@ class Helpers
      * @param string $thing - The certificatie(s) file path string or `data://text/plain;utf-8,...` (RFC2397) string
      * @param string $pattern - The signatureAlgorithm matching pattern, default is `null` means for all
      *
-     * @return array<?array{src:string,cert:\OpenSSLCertificate|resource|mixed,attr:array<mixed>}> - The X509 Certificate instance list.
+     * @return array<?array{pem:string,attr:array<mixed>}> - The X509 Certificate instance list.
      */
     public static function load(string $thing, ?string $pattern = null): array
     {
