@@ -112,7 +112,7 @@ $instance = Builder::factory([
 
 - `privateKey` 为`商户API私钥`，一般是通过官方证书生成工具生成字符串，支持`PKCS#1`及`PKCS#8`格式的私钥加载；
 - `publicKey` 为`平台API公钥`，一般是通过官方证书生成工具生成字符串，支持`PKCS#8`及`SPKI`格式的公钥加载；
-- `params` 接口中的`公共请求参数`配置项，已内置`charset=UTF-8`, `format=JSON`, `sign_type=RSA1`及`version=1.0`；
+- `params` 接口中的`公共请求参数`配置项，已内置`charset=UTF-8`, `format=JSON`, `sign_type=RSA2`及`version=1.0`；
 - `params['app_id' => $appId]` 为你的`应用app_id`；
 - `params['app_auth_token' => $appAuthToken]` 为你的`ISV`模式的授权`token`，按需配置；
 
