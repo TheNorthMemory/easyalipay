@@ -6,7 +6,7 @@
     "keywords": [
         "alipay",
         "openapi-chainable",
-        "aes-ecb"
+        "aes-cbc"
     ],
     "authors": [
         {
