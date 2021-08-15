@@ -2,6 +2,7 @@
 
 [A]Sync Chainable Alipay OpenAPI SDK for PHP
 
+[![GitHub actions](https://github.com/TheNorthMemory/easyalipay/workflows/CI/badge.svg)](https://github.com/TheNorthMemory/easyalipay/actions)
 [![Version](https://img.shields.io/packagist/v/easyalipay/easyalipay)](https://packagist.org/packages/easyalipay/easyalipay)
 [![PHP Version](https://img.shields.io/packagist/php-v/easyalipay/easyalipay)](https://packagist.org/packages/easyalipay/easyalipay)
 [![License](https://img.shields.io/packagist/l/easyalipay/easyalipay)](https://packagist.org/packages/easyalipay/easyalipay)

@@ -320,7 +320,7 @@ class FormatterTest extends TestCase
             $this->assertMatchesRegularExpression('#<form[^>]+>.*?</form>#', $html);
             $this->assertMatchesRegularExpression('#<script>.*?</script>#', $html);
         } else {
-            self::assertRegExp('#<html>.*?</html>#', $html);
+            self::assertRegExp('#<html[^>]+>.*?</html>#', $html);
             self::assertRegExp('#<form[^>]+>.*?</form>#', $html);
             self::assertRegExp('#<script>.*?</script>#', $html);
         }
