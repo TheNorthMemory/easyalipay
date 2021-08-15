@@ -115,6 +115,8 @@ $instance = Builder::factory([
 - `params` 接口中的`公共请求参数`配置项，已内置`charset=UTF-8`, `format=JSON`, `sign_type=RSA2`及`version=1.0`；
 - `params['app_id' => $appId]` 为你的`应用app_id`；
 - `params['app_auth_token' => $appAuthToken]` 为你的`ISV`模式的授权`token`，按需配置；
+- `params['app_cert_sn' => $appCertSn]` 为`公钥证书模式`的商户证书相关信息`SN`，按需配置；
+- `params['alipay_root_cert_sn' => $alipayRootCertSn]` 为`公钥证书模式`的平台证书相关信息`SN`，按需配置；
 
 **注：** `OpenAPI` 以及 `GuzzleHttp\Client` 的 `array $config` 初始化参数，均融合在一个型参上。
 
@@ -151,6 +153,7 @@ try {
 ```php
 use GuzzleHttp\Utils;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 
 $res = $instance
 ->alipay->trade->pay
@@ -162,9 +165,8 @@ $res = $instance
     'subject'      => 'Iphone6 16G',
     'total_amount' => '88.88',
 ])
-->then(static function($response) {
+->then(static function(ResponseInterface $response) {
     // 正常逻辑回调处理
-    echo $response->getBody(), PHP_EOL;
     return Utils::jsonDecode((string) $response->getBody(), true);
 })
 ->otherwise(static function($e) {
@@ -186,6 +188,7 @@ print_r($res);
 ```php
 use GuzzleHttp\Utils;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 
 $res = $instance
 ->Alipay->Trade->Precreate
@@ -196,20 +199,12 @@ $res = $instance
 ], ['query' => [
     'notify_url' => 'http://api.test.alipay.net/atinterface/receive_notify.htm'
 ]])
-->then(static function($response) {
+->then(static function(ResponseInterface $response) {
     // 正常逻辑回调处理
-    echo $response->getBody(), PHP_EOL;
     return Utils::jsonDecode((string) $response->getBody(), true);
 })
 ->otherwise(static function($e) {
     // 异常错误处理
-    echo $e->getMessage(), PHP_EOL;
-    if ($e instanceof RequestException && $e->hasResponse()) {
-        $r = $e->getResponse();
-        echo $r->getStatusCode() . ' ' . $r->getReasonPhrase(), PHP_EOL;
-        echo $r->getBody(), PHP_EOL, PHP_EOL, PHP_EOL;
-    }
-    echo $e->getTraceAsString(), PHP_EOL;
 })
 ->wait();
 print_r($res);
@@ -218,8 +213,7 @@ print_r($res);
 ### 手机网站支付接口2.0
 
 ```php
-use GuzzleHttp\Utils;
-use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 
 $res = $instance
 ->chain('alipay.trade.wap.pay')
@@ -230,20 +224,12 @@ $res = $instance
     'product_code' => 'FAST_INSTANT_TRADE_PAY',
     'quit_url'     => 'https://forum.alipay.com/mini-app/post/15501011',
 ], ['pager' => true])
-->then(static function($response) {
+->then(static function(ResponseInterface $response) {
     // 正常逻辑回调处理
-    echo $response->getBody(), PHP_EOL;
-    return Utils::jsonDecode((string) $response->getBody(), true);
+    return (string) $response->getBody();
 })
 ->otherwise(static function($e) {
     // 异常错误处理
-    echo $e->getMessage(), PHP_EOL;
-    if ($e instanceof RequestException && $e->hasResponse()) {
-        $r = $e->getResponse();
-        echo $r->getStatusCode() . ' ' . $r->getReasonPhrase(), PHP_EOL;
-        echo $r->getBody(), PHP_EOL, PHP_EOL, PHP_EOL;
-    }
-    echo $e->getTraceAsString(), PHP_EOL;
 })
 ->wait();
 print_r($res);
@@ -266,15 +252,8 @@ try {
     echo $resp->getBody(), PHP_EOL;
 } catch (RequestException $e) {
     // 进行错误处理
-    if ($e->hasResponse()) {
-        $r = $e->getResponse();
-        echo $r->getStatusCode() . ' ' . $r->getReasonPhrase(), PHP_EOL;
-        echo $r->getBody(), PHP_EOL, PHP_EOL, PHP_EOL;
-    }
 } catch (\Throwable $e) {
     // 异常错误处理
-    echo $e->getMessage(), PHP_EOL;
-    echo $e->getTraceAsString(), PHP_EOL;
 }
 ```
 
@@ -284,6 +263,7 @@ try {
 use GuzzleHttp\Utils;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr\MultipartStream;
+use Psr\Http\Message\ResponseInterface;
 
 $media = new MultipartStream([
     'name'     => 'image_content',
@@ -295,20 +275,12 @@ $res = $instance
 ->postAsync([
     'body' => $media,
 ])
-->then(static function($response) {
+->then(static function(ResponseInterface $response) {
     // 正常逻辑回调处理
-    echo $response->getBody(), PHP_EOL;
     return Utils::jsonDecode((string) $response->getBody(), true);
 })
 ->otherwise(static function($e) {
     // 异常错误处理
-    echo $e->getMessage(), PHP_EOL;
-    if ($e instanceof RequestException && $e->hasResponse()) {
-        $r = $e->getResponse();
-        echo $r->getStatusCode() . ' ' . $r->getReasonPhrase(), PHP_EOL;
-        echo $r->getBody(), PHP_EOL, PHP_EOL, PHP_EOL;
-    }
-    echo $e->getTraceAsString(), PHP_EOL;
 })
 ->wait();
 print_r($res);

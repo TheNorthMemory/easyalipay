@@ -70,8 +70,8 @@ class Rsa
     public static function fromPkcs1(string $thing, bool $isPublic = false)
     {
         $pkey = $isPublic
-            ? openssl_pkey_get_public(static::from(sprintf('%s.pkcs1://%s', 'public', $thing)))
-            : openssl_pkey_get_private(static::from(sprintf('%s.pkcs1://%s', 'private', $thing)));
+            ? openssl_pkey_get_public(static::from(sprintf('public.pkcs1://%s', $thing)))
+            : openssl_pkey_get_private(static::from(sprintf('private.pkcs1://%s', $thing)));
 
         if (false === $pkey) {
             throw new UnexpectedValueException(sprintf('Cannot load the PKCS#1 %s(%s).', $isPublic ? 'publicKey' : 'privateKey', $thing));

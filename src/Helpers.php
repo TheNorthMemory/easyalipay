@@ -109,14 +109,27 @@ class Helpers
              */
             [static::X509_ASN1_CERT_ISSUER => $issuer, static::X509_ASN1_CERT_SERIAL => $serial] = $cert[static::CERT_ATTR];
 
-            $attrs = array_reduce(array_keys($issuer), static function(array $c, string $k) use($issuer): array {
-                $c[] = implode('=', [$k, $issuer[$k]]);
-                return $c;
-            }, []);
-
-            $carry[] = static::md5(implode(',', array_reverse($attrs)), $serial);
+            $carry[] = static::md5(static::fold($issuer), $serial);
 
             return $carry;
         }, []));
+    }
+
+    /**
+     * Folder the `key/value` \$things in a reversed order then joined as `,`
+     *
+     * @param array<string,string> $things - The `issuer` or `subject` arrtributes array
+     */
+    public static function fold(array $things): string
+    {
+        return implode(',', array_reverse(array_reduce(
+            array_keys($things),
+            static function(array $carry, string $key) use($things): array {
+                $carry[] = implode('=', [$key, $things[$key]]);
+
+                return $carry;
+            },
+            []
+        )));
     }
 }
