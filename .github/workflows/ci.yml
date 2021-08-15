@@ -58,4 +58,6 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
-      - run: vendor/bin/phpstan
+      - run: vendor/bin/phpstan analyse --no-progress
+
+      - run: vendor/bin/phpunit

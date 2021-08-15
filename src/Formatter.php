@@ -144,7 +144,7 @@ class Formatter
      * @param array<string,string> $query - The http query
      * @param array<string,string> $data - The additional data
      */
-    public static function page(string $baseUri = '', string $method = '', array $query = [], array $data = []): string
+    public static function page(string $baseUri = 'https://openapi.alipay.com/gateway.do', string $method = 'POST', array $query = ['charset' => 'UTF-8'], array $data = []): string
     {
         $name = 'EasyAlipay' . time();
 
