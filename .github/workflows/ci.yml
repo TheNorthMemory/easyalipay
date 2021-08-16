@@ -58,6 +58,10 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
+      - run: |
+          openssl help
+          openssl version
+
       - run: vendor/bin/phpstan analyse --no-progress
 
       - run: vendor/bin/phpunit
