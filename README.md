@@ -72,7 +72,6 @@ composer install
 use EasyAlipay\Builder;
 use EasyAlipay\Crypto\Rsa;
 
-
 //应用app_id
 $appId = '2014072300007148';
 
@@ -90,7 +89,7 @@ $publicKey = Rsa::fromSpki('MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCg...');
 // 也支持以下方式，须保证`public_key.pem`为完整X509格式
 // $publicKey = Rsa::from('file:///the/alipay/public_key.pem');
 
-//如果是公钥证书模式，可以在工厂方法内传入 `$appCertSn` 及 `$rootCertSn`
+//如果是公钥证书模式，可以在工厂方法内传入 `$appCertSn` 及 `$alipayRootCertSn`
 // $appCertFilePath = '/my/cert/app_cert.crt';
 // $appCertSn = \EasyAlipay\Helpers::sn($appCertFilePath);
 // $alipayRootCertFilePath = '/alipay/cert/alipayRootCert.crt';

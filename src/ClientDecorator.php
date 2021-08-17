@@ -114,10 +114,10 @@ final class ClientDecorator implements ClientDecoratorInterface
     protected static function pager(RequestInterface $request, array $query = [], array $data = []): PromiseInterface
     {
         return Create::promiseFor(new Response(200, [],
-            Utils::streamFor(Formatter::page(
+            Formatter::page(
                 (string)$request->getUri()->withQuery(''),
                 $request->getMethod(), $query, $data
-            ))
+            )
         ));
     }
 
