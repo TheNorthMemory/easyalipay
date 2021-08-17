@@ -11,6 +11,7 @@ use function preg_match;
 use function preg_replace;
 use function sprintf;
 use function strncasecmp;
+use function trim;
 
 use EasyAlipay\Crypto\Rsa;
 use PHPUnit\Framework\TestCase;
@@ -34,7 +35,7 @@ class RsaTest extends TestCase
 
         preg_match(static::EVELOPE, $pkey ?: '', $matches);
 
-        return preg_replace('#\r?\n#', '', $matches['base64'] ?: '');
+        return trim(preg_replace('#\r?\n#', '', $matches['base64'] ?: ''));
     }
 
     public function testFromPkcs8(): void
