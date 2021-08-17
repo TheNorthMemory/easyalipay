@@ -61,7 +61,6 @@ jobs:
       - run: |
           openssl help
           openssl version
+          make
 
-      - run: vendor/bin/phpstan analyse --no-progress
-
-      - run: vendor/bin/phpunit
+      - run: make clean

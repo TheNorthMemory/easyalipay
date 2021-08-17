@@ -37,7 +37,6 @@ class Rsa
     private const RULES = [
         'private.pkcs1' => [self::PKEY_FORMAT, 'RSA PRIVATE', 16],
         'private.pkcs8' => [self::PKEY_FORMAT, 'PRIVATE',     16],
-        'public.pkcs1'  => [self::PKEY_FORMAT, 'RSA PUBLIC',  15],
         'public.spki'   => [self::PKEY_FORMAT, 'PUBLIC',      14],
     ];
 
@@ -60,21 +59,18 @@ class Rsa
     }
 
     /**
-     * Sugar for loading input `privateKey/publicKey` string.
+     * Sugar for loading input `privateKey` string, PHP doesnot supported PKCS#1's publicKey.
      *
      * @param string $thing - The string in `PKCS#1` format.
-     * @param boolean $isPublic - The `$thing` sting is public key string.
      * @return \OpenSSLAsymmetricKey|resource|mixed
      * @throws UnexpectedValueException
      */
-    public static function fromPkcs1(string $thing, bool $isPublic = false)
+    public static function fromPkcs1(string $thing)
     {
-        $pkey = $isPublic
-            ? openssl_pkey_get_public(static::from(sprintf('public.pkcs1://%s', $thing)))
-            : openssl_pkey_get_private(static::from(sprintf('private.pkcs1://%s', $thing)));
+        $pkey = openssl_pkey_get_private(static::from(sprintf('private.pkcs1://%s', $thing)));
 
         if (false === $pkey) {
-            throw new UnexpectedValueException(sprintf('Cannot load the PKCS#1 %s(%s).', $isPublic ? 'publicKey' : 'privateKey', $thing));
+            throw new UnexpectedValueException(sprintf('Cannot load the PKCS#1 privateKey(%s).', $thing));
         }
 
         return $pkey;
