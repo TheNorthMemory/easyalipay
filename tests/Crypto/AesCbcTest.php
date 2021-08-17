@@ -21,7 +21,7 @@ class AesCbcTest extends TestCase
     }
 
     /**
-     * @return array<string,array{string,string,?string,string}>
+     * @return array<string,array{string,string,?string,?string}>
      */
     public function phrasesDataProvider(): array
     {
@@ -90,7 +90,7 @@ class AesCbcTest extends TestCase
      * @param ?string $iv
      * @param ?string $excepted
      */
-    public function testEncrypt(string $plaintext, string $cipherkey, ?string $iv = null, string $excepted = null): void
+    public function testEncrypt(string $plaintext, string $cipherkey, ?string $iv = null, ?string $excepted = null): void
     {
         $ciphertext = AesCbc::encrypt($plaintext, $cipherkey, $iv);
         self::assertIsString($ciphertext);
