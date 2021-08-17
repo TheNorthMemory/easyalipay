@@ -6,13 +6,16 @@ use const PHP_MAJOR_VERSION;
 
 use function array_values;
 use function file_get_contents;
+use function is_string;
 use function method_exists;
 use function preg_match;
 use function preg_replace;
 use function sprintf;
 use function strncasecmp;
+use function substr;
 use function trim;
 
+use EasyAlipay\Formatter;
 use EasyAlipay\Crypto\Rsa;
 use PHPUnit\Framework\TestCase;
 
@@ -80,7 +83,7 @@ class RsaTest extends TestCase
 
     public function testFromSpki(): void
     {
-        $thing = $this->getMockContents('spki', 'pub');
+        $thing = $this->getMockContents('spki', 'pem');
 
         self::assertIsString($thing);
         if (method_exists($this, 'assertMatchesRegularExpression')) {
@@ -106,12 +109,12 @@ class RsaTest extends TestCase
         return [
             '`private.pkcs1://` string'               => ['private.pkcs1://' . $this->getMockContents('pkcs1', 'key')],
             '`private.pkcs8://` string'               => ['private.pkcs8://' . $this->getMockContents('pkcs8', 'key')],
-            '`public.spki://` string'                 => ['public.spki://' . $this->getMockContents('spki', 'pub')],
+            '`public.spki://` string'                 => ['public.spki://' . $this->getMockContents('spki', 'pem')],
             '`file://` PKCS#1 privateKey path string' => [$f = 'file://' . sprintf(static::FIXTURES, 'pkcs1', 'key')],
             'PKCS#1 privateKey contents'              => [(string)file_get_contents($f)],
             '`file://` PKCS#8 privateKey path string' => [$f = 'file://' . sprintf(static::FIXTURES, 'pkcs8', 'key')],
             'PKCS#8 privateKey contents'              => [(string)file_get_contents($f)],
-            '`file://` SPKI publicKey path string'    => [$f = 'file://' . sprintf(static::FIXTURES, 'spki', 'pub')],
+            '`file://` SPKI publicKey path string'    => [$f = 'file://' . sprintf(static::FIXTURES, 'spki', 'pem')],
             'SKPI publicKey contents'                 => [(string)file_get_contents($f)],
         ];
     }
@@ -146,23 +149,23 @@ class RsaTest extends TestCase
         [[$pri1], [$pri2], [$pub1], [$pri3], [$pri4], [$pri5], [$pri6], [$pub2], [$pub3]] = array_values($this->keyPhrasesDataProvider());
 
         return [
-            'plaintext, `private.pkcs1://`, `public.spki://`'               => ['hello Alipay 你好 支付宝', $pri1, Rsa::ALGO_TYPE_RSA2, $pub1],
-            'plaintext, `private.pkcs8://`, `public.spki://`'               => ['hello Alipay 你好 支付宝', $pri2, Rsa::ALGO_TYPE_RSA2, $pub1],
-            'plaintext, `file://` PKCS#1 privateKey, `public.spki://`'      => ['hello Alipay 你好 支付宝', $pri3, Rsa::ALGO_TYPE_RSA2, $pub1],
-            'plaintext, PKCS#1 privateKey string, `public.spki://`'         => ['hello Alipay 你好 支付宝', $pri4, Rsa::ALGO_TYPE_RSA2, $pub1],
-            'plaintext, `file://` PKCS#8 privatekey, `public.spki://`'      => ['hello Alipay 你好 支付宝', $pri5, Rsa::ALGO_TYPE_RSA2, $pub1],
-            'plaintext, PKCS#8 privateKey string, `public.spki://`'         => ['hello Alipay 你好 支付宝', $pri6, Rsa::ALGO_TYPE_RSA2, $pub1],
-            'plaintext, `private.pkcs1://`, `file://` SPKI pubKey'          => ['hello Alipay 你好 支付宝', $pri1, Rsa::ALGO_TYPE_RSA2, $pub2],
-            'plaintext, `private.pkcs8://`, `file://` SPKI pubKey'          => ['hello Alipay 你好 支付宝', $pri2, Rsa::ALGO_TYPE_RSA2, $pub2],
-            'plaintext, `file://` PKCS#1 privateKey, `file://` SPKI pubKey' => ['hello Alipay 你好 支付宝', $pri3, Rsa::ALGO_TYPE_RSA2, $pub2],
-            'plaintext, PKCS#1 privateKey string, `file://` SPKI pubKey'    => ['hello Alipay 你好 支付宝', $pri4, Rsa::ALGO_TYPE_RSA2, $pub2],
-            'plaintext, `file://` PKCS#8 privatekey, `file://` SPKI pubKey' => ['hello Alipay 你好 支付宝', $pri5, Rsa::ALGO_TYPE_RSA2, $pub2],
-            'plaintext, PKCS#8 privateKey string, `file://` SPKI pubKey'    => ['hello Alipay 你好 支付宝', $pri6, Rsa::ALGO_TYPE_RSA2, $pub2],
-            'plaintext, `private.pkcs1://`, SPKI publicKey string'          => ['hello Alipay 你好 支付宝', $pri1, Rsa::ALGO_TYPE_RSA2, $pub3],
-            'plaintext, `private.pkcs8://`, SPKI publicKey string'          => ['hello Alipay 你好 支付宝', $pri2, Rsa::ALGO_TYPE_RSA2, $pub3],
-            'plaintext, `file://` PKCS#1 privateKey, SPKI publicKey string' => ['hello Alipay 你好 支付宝', $pri3, Rsa::ALGO_TYPE_RSA2, $pub3],
-            'plaintext, PKCS#1 privateKey string, SPKI publicKey string'    => ['hello Alipay 你好 支付宝', $pri4, Rsa::ALGO_TYPE_RSA2, $pub3],
-            'plaintext, `file://` PKCS#8 privatekey, SPKI publicKey string' => ['hello Alipay 你好 支付宝', $pri5, Rsa::ALGO_TYPE_RSA2, $pub3],
+            'plaintext, `private.pkcs1://`, `public.spki://`'               => [Formatter::nonce( 8), Rsa::fromPkcs1(substr($pri1, 16)), Rsa::ALGO_TYPE_RSA2, Rsa::fromSpki(substr($pub1, 14))],
+            'plaintext, `private.pkcs8://`, `public.spki://`'               => [Formatter::nonce(16), Rsa::fromPkcs8(substr($pri2, 16)), Rsa::ALGO_TYPE_RSA2, Rsa::fromSpki(substr($pub1, 14))],
+            'plaintext, `file://` PKCS#1 privateKey, `public.spki://`'      => [Formatter::nonce(24), Rsa::from($pri3), Rsa::ALGO_TYPE_RSA2, $pub1],
+            'plaintext, PKCS#1 privateKey string, `public.spki://`'         => [Formatter::nonce(32), Rsa::from($pri4), Rsa::ALGO_TYPE_RSA2, $pub1],
+            'plaintext, `file://` PKCS#8 privatekey, `public.spki://`'      => [Formatter::nonce(40), Rsa::from($pri5), Rsa::ALGO_TYPE_RSA2, $pub1],
+            'plaintext, PKCS#8 privateKey string, `public.spki://`'         => [Formatter::nonce(48), Rsa::from($pri6), Rsa::ALGO_TYPE_RSA2, $pub1],
+            'plaintext, `private.pkcs1://`, `file://` SPKI pubKey'          => [Formatter::nonce(56), Rsa::from($pri1), Rsa::ALGO_TYPE_RSA2, $pub2],
+            'plaintext, `private.pkcs8://`, `file://` SPKI pubKey'          => [Formatter::nonce(64), Rsa::from($pri2), Rsa::ALGO_TYPE_RSA2, $pub2],
+            'plaintext, `file://` PKCS#1 privateKey, `file://` SPKI pubKey' => [Formatter::nonce(72), $pri3, Rsa::ALGO_TYPE_RSA2, $pub2],
+            'plaintext, PKCS#1 privateKey string, `file://` SPKI pubKey'    => [Formatter::nonce(80), $pri4, Rsa::ALGO_TYPE_RSA2, $pub2],
+            'plaintext, `file://` PKCS#8 privatekey, `file://` SPKI pubKey' => [Formatter::nonce(88), $pri5, Rsa::ALGO_TYPE_RSA2, $pub2],
+            'plaintext, PKCS#8 privateKey string, `file://` SPKI pubKey'    => [Formatter::nonce(96), $pri6, Rsa::ALGO_TYPE_RSA2, $pub2],
+            'plaintext, `private.pkcs1://`, SPKI publicKey string'          => [Formatter::nonce(104), $pri1, Rsa::ALGO_TYPE_RSA2, $pub3],
+            'plaintext, `private.pkcs8://`, SPKI publicKey string'          => [Formatter::nonce(112), $pri2, Rsa::ALGO_TYPE_RSA2, $pub3],
+            'plaintext, `file://` PKCS#1 privateKey, SPKI publicKey string' => [Formatter::nonce(120), $pri3, Rsa::ALGO_TYPE_RSA2, $pub3],
+            'plaintext, PKCS#1 privateKey string, SPKI publicKey string'    => [Formatter::nonce(128), $pri4, Rsa::ALGO_TYPE_RSA2, $pub3],
+            'plaintext, `file://` PKCS#8 privatekey, SPKI publicKey string' => [Formatter::nonce(134), $pri5, Rsa::ALGO_TYPE_RSA2, $pub3],
             'plaintext, PKCS#8 privateKey string, SPKI publicKey string'    => ['hello Alipay 你好 支付宝', $pri6, Rsa::ALGO_TYPE_RSA2, $pub3],
         ];
     }
@@ -170,12 +173,12 @@ class RsaTest extends TestCase
     /**
      * @dataProvider keysProvider
      * @param string $plaintext
-     * @param string $privateKey
+     * @param string|\OpenSSLAsymmetricKey|resource|mixed $privateKey
      * @param string $type
      */
     public function testSign(string $plaintext, $privateKey, $type): void
     {
-        $signature = Rsa::sign($plaintext, Rsa::from($privateKey), $type);
+        $signature = Rsa::sign($plaintext, is_string($privateKey) ? Rsa::from($privateKey) : $privateKey, $type);
 
         self::assertIsString($signature);
         self::assertNotEquals($plaintext, $signature);
@@ -190,13 +193,13 @@ class RsaTest extends TestCase
     /**
      * @dataProvider keysProvider
      * @param string $plaintext
-     * @param string $privateKey
+     * @param string|\OpenSSLAsymmetricKey|resource|mixed $privateKey
      * @param string $type
-     * @param string $publicKey
+     * @param string|\OpenSSLAsymmetricKey|resource|mixed $publicKey
      */
     public function testVerify(string $plaintext, $privateKey, $type, $publicKey): void
     {
-        $signature = Rsa::sign($plaintext, Rsa::from($privateKey), $type);
+        $signature = Rsa::sign($plaintext, is_string($privateKey) ? Rsa::from($privateKey) : $privateKey, $type);
 
         self::assertIsString($signature);
         self::assertNotEquals($plaintext, $signature);
@@ -207,6 +210,6 @@ class RsaTest extends TestCase
             self::assertRegExp(self::BASE64_EXPRESSION, $signature);
         }
 
-        self::assertTrue(Rsa::verify($plaintext, $signature, Rsa::from($publicKey), $type));
+        self::assertTrue(Rsa::verify($plaintext, $signature, is_string($publicKey) ? Rsa::from($publicKey) : $publicKey, $type));
     }
 }
