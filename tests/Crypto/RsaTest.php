@@ -12,8 +12,6 @@ use function preg_replace;
 use function sprintf;
 use function strncasecmp;
 
-use OpenSSLAsymmetricKey;
-
 use EasyAlipay\Crypto\Rsa;
 use PHPUnit\Framework\TestCase;
 
@@ -54,7 +52,6 @@ class RsaTest extends TestCase
 
         if (8 === PHP_MAJOR_VERSION) {
             self::assertIsObject($pkey);
-            self::assertInstanceOf(OpenSSLAsymmetricKey::class, $pkey);
         } else {
             self::assertIsResource($pkey);
         }
@@ -75,7 +72,6 @@ class RsaTest extends TestCase
 
         if (8 === PHP_MAJOR_VERSION) {
             self::assertIsObject($pkey);
-            self::assertInstanceOf(OpenSSLAsymmetricKey::class, $pkey);
         } else {
             self::assertIsResource($pkey);
         }
@@ -96,7 +92,6 @@ class RsaTest extends TestCase
 
         if (8 === PHP_MAJOR_VERSION) {
             self::assertIsObject($pkey);
-            self::assertInstanceOf(OpenSSLAsymmetricKey::class, $pkey);
         } else {
             self::assertIsResource($pkey);
         }
