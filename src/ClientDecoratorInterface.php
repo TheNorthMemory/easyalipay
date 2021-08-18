@@ -2,6 +2,7 @@
 
 namespace EasyAlipay;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -14,6 +15,11 @@ interface ClientDecoratorInterface
     public const MAJOR_VERSION = 0;
 
     public const MINOR_VERSION = 1;
+
+    /**
+     * Retrieve the `\GuzzleHttp\Client` instance.
+     */
+    public function getClient(): Client;
 
     /**
      * Retrieve the `\GuzzleHttp\HandlerStack` instance.

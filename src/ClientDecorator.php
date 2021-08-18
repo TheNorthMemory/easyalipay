@@ -212,6 +212,14 @@ final class ClientDecorator implements ClientDecoratorInterface
     /**
      * @inheritDoc
      */
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getHandlerStack(): HandlerStack
     {
         return $this->stack;
