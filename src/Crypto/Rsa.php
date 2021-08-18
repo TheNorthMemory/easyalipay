@@ -83,9 +83,9 @@ class Rsa
     public static function pkcs1ToSpki(string $thing): string
     {
         $raw = self::CHR_NUL . base64_decode($thing);
-        $new = pack('H*', static::ASN1_OID_RSAENCRYPTION) . static::CHR_ETX . static::encodeLength($raw) . $raw;
+        $new = pack('H*', self::ASN1_OID_RSAENCRYPTION) . self::CHR_ETX . self::encodeLength($raw) . $raw;
 
-        return base64_encode(pack('Ca*a*', static::ASN1_SEQUENCE, static::encodeLength($new), $new));
+        return base64_encode(pack('Ca*a*', self::ASN1_SEQUENCE, self::encodeLength($new), $new));
     }
 
     /**
