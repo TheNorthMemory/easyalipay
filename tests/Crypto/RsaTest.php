@@ -10,6 +10,7 @@ use function is_string;
 use function method_exists;
 use function preg_match;
 use function preg_replace;
+use function random_bytes;
 use function sprintf;
 use function strncasecmp;
 use function substr;
@@ -26,6 +27,12 @@ class RsaTest extends TestCase
     private const FIXTURES = __DIR__ . '/../fixtures/mock.%s.%s';
 
     private const EVELOPE = '#-{5}BEGIN[^-----]+-{5}\r?\n(?<base64>[^-----]+)\r?\n-{5}END[^-----]+-{5}#';
+
+    public function testClassConstants(): void
+    {
+        self::assertIsString(Rsa::ALGO_TYPE_RSA);
+        self::assertIsString(Rsa::ALGO_TYPE_RSA2);
+    }
 
     /**
      * @param string $type
@@ -61,18 +68,40 @@ class RsaTest extends TestCase
         }
     }
 
-    public function testFromPkcs1(): void
+    public function testPkcs1ToSpki(): void
     {
-        $thing = $this->getMockContents('pkcs8', 'key');
+        [, , [$spki], , , , , , , [$pkcs1]] = array_values($this->keyPhrasesDataProvider());
 
-        self::assertIsString($thing);
+        self::assertStringStartsWith('public.spki://', $spki);
+        self::assertStringStartsWith('public.pkcs1://', $pkcs1);
+        self::assertEquals(substr($spki, 14), Rsa::pkcs1ToSpki(substr($pkcs1, 15)));
+    }
+
+    /**
+     * @return array<string,array{string,boolean}>
+     */
+    public function pkcs1PhrasesDataProvider(): array
+    {
+        return [
+            '`private.pkcs1://`' => [$this->getMockContents('pkcs1', 'key'), false],
+            '`public.pkcs1://`'  => [$this->getMockContents('pkcs1', 'pem'), true],
+        ];
+    }
+
+    /**
+     * @dataProvider pkcs1PhrasesDataProvider
+     *
+     * @param string $thing
+     */
+    public function testFromPkcs1(string $thing, bool $isPublic = false): void
+    {
         if (method_exists($this, 'assertMatchesRegularExpression')) {
             $this->assertMatchesRegularExpression(self::BASE64_EXPRESSION, $thing);
         } else {
             self::assertRegExp(self::BASE64_EXPRESSION, $thing);
         }
 
-        $pkey = Rsa::fromPkcs1($thing);
+        $pkey = Rsa::fromPkcs1($thing, $isPublic);
 
         if (8 === PHP_MAJOR_VERSION) {
             self::assertIsObject($pkey);
@@ -116,6 +145,7 @@ class RsaTest extends TestCase
             'PKCS#8 privateKey contents'              => [(string)file_get_contents($f)],
             '`file://` SPKI publicKey path string'    => [$f = 'file://' . sprintf(static::FIXTURES, 'spki', 'pem')],
             'SKPI publicKey contents'                 => [(string)file_get_contents($f)],
+            '`public.pkcs1://` string'                => ['public.pkcs1://' . $this->getMockContents('pkcs1', 'pem')],
         ];
     }
 
@@ -146,7 +176,7 @@ class RsaTest extends TestCase
      */
     public function keysProvider(): array
     {
-        [[$pri1], [$pri2], [$pub1], [$pri3], [$pri4], [$pri5], [$pri6], [$pub2], [$pub3]] = array_values($this->keyPhrasesDataProvider());
+        [[$pri1], [$pri2], [$pub1], [$pri3], [$pri4], [$pri5], [$pri6], [$pub2], [$pub3], [$pub4]] = array_values($this->keyPhrasesDataProvider());
 
         return [
             'plaintext, `private.pkcs1://`, `public.spki://`'               => [Formatter::nonce( 8), Rsa::fromPkcs1(substr($pri1, 16)), Rsa::ALGO_TYPE_RSA2, Rsa::fromSpki(substr($pub1, 14))],
@@ -167,6 +197,12 @@ class RsaTest extends TestCase
             'plaintext, PKCS#1 privateKey string, SPKI publicKey string'    => [Formatter::nonce(128), $pri4, Rsa::ALGO_TYPE_RSA2, $pub3],
             'plaintext, `file://` PKCS#8 privatekey, SPKI publicKey string' => [Formatter::nonce(134), $pri5, Rsa::ALGO_TYPE_RSA2, $pub3],
             'plaintext, PKCS#8 privateKey string, SPKI publicKey string'    => ['hello Alipay 你好 支付宝', $pri6, Rsa::ALGO_TYPE_RSA2, $pub3],
+            'plaintext, `private.pkcs1://`, `public.pkcs1://`'              => [random_bytes(142), Rsa::fromPkcs1(substr($pri1, 16)), Rsa::ALGO_TYPE_RSA2, Rsa::fromPkcs1(substr($pub4, 15), true)],
+            'plaintext, `private.pkcs8://`, `public.pkcs1://`'              => [random_bytes(150), Rsa::fromPkcs8(substr($pri2, 16)), Rsa::ALGO_TYPE_RSA2, Rsa::fromPkcs1(substr($pub4, 15), true)],
+            'plaintext, `file://` PKCS#1 privateKey, `public.pkcs1://`'     => [random_bytes(158), Rsa::from($pri3), Rsa::ALGO_TYPE_RSA2, Rsa::fromPkcs1(substr($pub4, 15), true)],
+            'plaintext, PKCS#1 privateKey string, `public.pkcs1://`'        => [random_bytes(166), Rsa::from($pri4), Rsa::ALGO_TYPE_RSA2, $pub4],
+            'plaintext, `file://` PKCS#8 privatekey, `public.pkcs1://`'     => [random_bytes(174), Rsa::from($pri5), Rsa::ALGO_TYPE_RSA2, $pub4],
+            'plaintext, PKCS#8 privateKey string, `public.pkcs1://`'        => [random_bytes(182), Rsa::from($pri6), Rsa::ALGO_TYPE_RSA2, $pub4],
         ];
     }
 
