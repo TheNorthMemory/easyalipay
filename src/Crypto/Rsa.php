@@ -6,11 +6,16 @@ use const PHP_URL_SCHEME;
 
 use function base64_decode;
 use function base64_encode;
+use function chr;
+use function ltrim;
+use function openssl_pkey_get_private;
+use function openssl_pkey_get_public;
 use function openssl_sign;
 use function openssl_verify;
-use function openssl_pkey_get_public;
+use function pack;
 use function parse_url;
 use function sprintf;
+use function strlen;
 use function substr;
 use function wordwrap;
 
@@ -37,11 +42,54 @@ class Rsa
     private const RULES = [
         'private.pkcs1' => [self::PKEY_FORMAT, 'RSA PRIVATE', 16],
         'private.pkcs8' => [self::PKEY_FORMAT, 'PRIVATE',     16],
+        'public.pkcs1'  => [self::PKEY_FORMAT, 'RSA PUBLIC',  15],
         'public.spki'   => [self::PKEY_FORMAT, 'PUBLIC',      14],
     ];
 
     /**
-     * Sugar for loading input `privateKey` string.
+     * @var string - Equal to `sequence(oid(1.2.840.113549.1.1.1), null))`
+     * @link https://datatracker.ietf.org/doc/html/rfc3447#appendix-A.2
+     */
+    private const ASN1_OID_RSAENCRYPTION = '300d06092a864886f70d0101010500';
+    private const ASN1_SEQUENCE = 48;
+    private const CHR_NUL = "\0";
+    private const CHR_ETX = "\3";
+
+    /**
+     * Translate the \$thing strlen from `X690` style to the `ASN.1` 128bit hexadecimal length string
+     *
+     * @param string $thing - The string
+     *
+     * @return string The `ASN.1` 128bit hexadecimal length string
+     */
+    private static function encodeLength(string $thing): string
+    {
+        $num = strlen($thing);
+        if ($num <= 0x7F) {
+            return chr($num);
+        }
+
+        $tmp = ltrim(pack('N', $num), self::CHR_NUL);
+        return pack('Ca*', strlen($tmp) | 0x80, $tmp);
+    }
+
+    /**
+     * Convert the `PKCS#1` format RSA Public Key to `SPKI` format
+     *
+     * @param string $thing - The base64-encoded string, without evelope style
+     *
+     * @return string The `SPKI` style public key without evelope string
+     */
+    public static function pkcs1ToSpki(string $thing): string
+    {
+        $raw = self::CHR_NUL . base64_decode($thing);
+        $new = pack('H*', static::ASN1_OID_RSAENCRYPTION) . static::CHR_ETX . static::encodeLength($raw) . $raw;
+
+        return base64_encode(pack('Ca*a*', static::ASN1_SEQUENCE, static::encodeLength($new), $new));
+    }
+
+    /**
+     * Sugar for loading input `privateKey` string, pure `base64-encoded-string` without LF and evelope.
      *
      * @param string $thing - The string in `PKCS#8` format.
      * @return \OpenSSLAsymmetricKey|resource|mixed
@@ -59,25 +107,28 @@ class Rsa
     }
 
     /**
-     * Sugar for loading input `privateKey` string, PHP doesnot supported PKCS#1's publicKey.
+     * Sugar for loading input `privateKey/publicKey` string, pure `base64-encoded-string` without LF and evelope.
      *
      * @param string $thing - The string in `PKCS#1` format.
+     * @param boolean $isPublic - The `$thing` is public key string.
      * @return \OpenSSLAsymmetricKey|resource|mixed
      * @throws UnexpectedValueException
      */
-    public static function fromPkcs1(string $thing)
+    public static function fromPkcs1(string $thing, bool $isPublic = false)
     {
-        $pkey = openssl_pkey_get_private(static::from(sprintf('private.pkcs1://%s', $thing)));
+        $pkey = $isPublic
+            ? openssl_pkey_get_public(static::from(sprintf('public.pkcs1://%s', $thing)))
+            : openssl_pkey_get_private(static::from(sprintf('private.pkcs1://%s', $thing)));
 
         if (false === $pkey) {
-            throw new UnexpectedValueException(sprintf('Cannot load the PKCS#1 privateKey(%s).', $thing));
+            throw new UnexpectedValueException(sprintf('Cannot load the PKCS#1 %s(%s).', $isPublic ? 'publicKey' : 'privateKey', $thing));
         }
 
         return $pkey;
     }
 
     /**
-     * Sugar for loading input `publicKey` string.
+     * Sugar for loading input `publicKey` string, pure `base64-encoded-string` without LF and evelope.
      *
      * @param string $thing - The string in `SKPI` format.
      * @return \OpenSSLAsymmetricKey|resource|mixed
@@ -107,7 +158,12 @@ class Rsa
         [$format, $kind, $offset] = static::RULES[$protocol] ?? [null, null, null];
 
         if ($format && $kind && $offset) {
-            return sprintf($format, $kind, wordwrap(substr($thing, $offset), 64, "\n", true));
+            $src = substr($thing, $offset);
+            if ('public.pkcs1' === $protocol) {
+                $src = static::pkcs1ToSpki($src);
+                [, $kind] = static::RULES['public.spki'];
+            }
+            return sprintf($format, $kind, wordwrap($src, 64, "\n", true));
         }
 
         return $thing;
