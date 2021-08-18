@@ -83,6 +83,7 @@ class HelpersTest extends TestCase
         self::assertIsArray($things);
         self::assertArrayHasKey(0, $things);
 
+        /** @var array<string,mixed> $thing */
         [$thing] = $things;
         self::assertIsArray($thing);
         self::assertArrayHasKey(Helpers::CERT_PEM, $thing);
@@ -98,6 +99,7 @@ class HelpersTest extends TestCase
             self::assertRegExp(self::PEM_CERT_EVELOPE, $pem);
         }
 
+        /** @var array<string,mixed> $attr */
         self::assertIsArray($attr);
         self::assertArrayHasKey('issuer', $attr);
         self::assertArrayHasKey('subject', $attr);
