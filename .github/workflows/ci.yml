@@ -60,7 +60,9 @@ jobs:
 
       - run: vendor/bin/phpstan analyse --no-progress
 
-      - run: make keygen
+      - run: |
+          make keygen
+          make x509crt
 
       - run: vendor/bin/phpunit
 
