@@ -6,7 +6,6 @@ use const PHP_URL_SCHEME;
 
 use function base64_decode;
 use function base64_encode;
-use function chr;
 use function ltrim;
 use function openssl_pkey_get_private;
 use function openssl_pkey_get_public;
@@ -66,7 +65,7 @@ class Rsa
     {
         $num = strlen($thing);
         if ($num <= 0x7F) {
-            return chr($num);
+            return sprintf('%c', $num);
         }
 
         $tmp = ltrim(pack('N', $num), self::CHR_NUL);

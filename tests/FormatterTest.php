@@ -2,12 +2,15 @@
 
 namespace EasyAlipay\Tests;
 
+use function count;
+use function implode;
+use function is_array;
+use function is_null;
+use function is_string;
+use function ksort;
 use function method_exists;
 use function strlen;
-use function ksort;
-use function is_null;
 
-use DateTimeZone;
 use InvalidArgumentException;
 
 use EasyAlipay\Formatter;

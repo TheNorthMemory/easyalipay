@@ -3,9 +3,9 @@
 namespace EasyAlipay\Tests\Crypto;
 
 use function base64_encode;
-use function random_bytes;
-use function is_array;
 use function is_null;
+use function method_exists;
+use function random_bytes;
 
 use EasyAlipay\Formatter;
 use EasyAlipay\Crypto\AesCbc;

@@ -33,7 +33,7 @@ class Helpers
     /** @var string `pem` identify */
     public const CERT_PEM = 'pem';
 
-    /** @var string attributes by `openssl_x509_parse` */
+    /** @var string `attr` identify for the result of the `openssl_x509_parse` */
     public const CERT_ATTR = 'attr';
 
     /**

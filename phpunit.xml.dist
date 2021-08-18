@@ -11,7 +11,7 @@
 >
 
   <testsuites>
-    <testsuite name="WeChatPay tests suite">
+    <testsuite name="EasyAlipay tests suite">
       <directory>./tests/</directory>
     </testsuite>
   </testsuites>

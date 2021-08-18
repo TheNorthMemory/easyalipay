@@ -2,13 +2,21 @@
 
 namespace EasyAlipay\Tests\Crypto;
 
-use function md5;
+use const PHP_EOL;
+
+use function array_walk;
+use function base64_encode;
+use function explode;
+use function file_get_contents;
 use function implode;
+use function md5;
+use function method_exists;
+use function sprintf;
 use function strlen;
+use function strpos;
 
 use EasyAlipay\Formatter;
 use EasyAlipay\Helpers;
-
 use PHPUnit\Framework\TestCase;
 
 class HelpersTest extends TestCase

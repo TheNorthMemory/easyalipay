@@ -14,7 +14,6 @@ use function random_bytes;
 use function sprintf;
 use function strncasecmp;
 use function substr;
-use function trim;
 
 use EasyAlipay\Formatter;
 use EasyAlipay\Crypto\Rsa;
@@ -45,7 +44,7 @@ class RsaTest extends TestCase
 
         preg_match(static::EVELOPE, $pkey ?: '', $matches);
 
-        return trim(preg_replace('#\r?\n#', '', $matches['base64'] ?: ''));
+        return preg_replace('#\r|\n#', '', $matches['base64'] ?: '');
     }
 
     public function testFromPkcs8(): void
