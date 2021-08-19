@@ -25,6 +25,8 @@ class HelpersTest extends TestCase
 
     private const PEM_CERT_EVELOPE = '#-{5}BEGIN CERTIFICATE-{5}\r?\n(?<base64>[^-----]+)\r?\n-{5}END CERTIFICATE-{5}#';
 
+    private const X509_ISSUER_REVERSE_INFO = 'CN=EACommunity CA R0,OU=EACommunity Authority,O=EACommunity,C=CN';
+
     public function testClassConstants(): void
     {
         self::assertIsString(Helpers::CERT_PEM);
@@ -69,15 +71,18 @@ class HelpersTest extends TestCase
     }
 
     /**
-     * @return array<string,array{string}>
+     * @return array<string,array{string,string}>
      */
     public function loadDataProvider(): array
     {
         return [
-            'normal local file'             => [$file = sprintf(self::FIXTURES, 'sha256', 'crt')],
-            'normal file:// protocol'       => ['file://' . $file],
-            'RFC2397 data:// protocol'      => ['data://text/plain;base64,' . base64_encode($c = (string)file_get_contents($file))],
-            'data:// with two certificates' => ['data://text/plain;base64,' . base64_encode(PHP_EOL . $c . PHP_EOL . PHP_EOL . $c . PHP_EOL)],
+            'normal local file'             => [
+                $file = sprintf(self::FIXTURES, 'sha256', 'crt'),
+                $sn = md5(self::X509_ISSUER_REVERSE_INFO . rtrim((string)file_get_contents(sprintf(self::FIXTURES, 'serial', 'txt')))),
+            ],
+            'normal file:// protocol'       => ['file://' . $file, $sn],
+            'RFC2397 data:// protocol'      => ['data://text/plain;base64,' . base64_encode($c = (string)file_get_contents($file)), $sn],
+            'data:// with two certificates' => ['data://text/plain;base64,' . base64_encode(PHP_EOL . $c . PHP_EOL . PHP_EOL . $c . PHP_EOL), $sn . '_' . $sn],
         ];
     }
 
@@ -135,12 +140,14 @@ class HelpersTest extends TestCase
     /**
      * @dataProvider loadDataProvider
      * @param string $file
+     * @param string $sn
      */
-    public function testSn(string $file): void
+    public function testSn(string $file, string $sn): void
     {
         $thing = Helpers::sn($file);
         self::assertIsString($thing);
         self::assertNotEmpty($thing);
+        self::assertEquals($thing, $sn);
         if (strpos($thing, '_') > 0) {
             $tmp = explode('_', $thing);
             array_walk($tmp, static function (string $piece): void {
@@ -162,7 +169,7 @@ class HelpersTest extends TestCase
             ],
             'nest array{C,O,OU,CN}, colleped as `CN,OU,O,C`' => [
                 ['C' => 'CN', 'O' => 'EACommunity', 'OU' => 'EACommunity Authority', 'CN' => 'EACommunity CA R0'],
-                'CN=EACommunity CA R0,OU=EACommunity Authority,O=EACommunity,C=CN',
+                self::X509_ISSUER_REVERSE_INFO,
             ],
         ];
     }
