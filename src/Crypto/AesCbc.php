@@ -26,7 +26,7 @@ class AesCbc
     private const MODE_CBC = 'aes-%d-cbc';
 
     /** @var string - `NULL` character */
-    private const CHAR_NULL = "\0";
+    private const CHR_NUL = "\0";
 
     /**
      * Detect the `[algo,key,options,iv]` with given `cipherkey` and `iv`.
@@ -41,7 +41,7 @@ class AesCbc
         /** @var string $key */
         $key = base64_decode($cipherkey);
 
-        return [sprintf(static::MODE_CBC, strlen($key) * 8), $key, OPENSSL_RAW_DATA, $iv ?? str_repeat(static::CHAR_NULL, static::BLOCK_SIZE)];
+        return [sprintf(static::MODE_CBC, strlen($key) * 8), $key, OPENSSL_RAW_DATA, $iv ?? str_repeat(static::CHR_NUL, static::BLOCK_SIZE)];
     }
 
     /**
