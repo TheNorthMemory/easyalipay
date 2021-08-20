@@ -14,7 +14,7 @@ interface ClientDecoratorInterface
 {
     public const MAJOR_VERSION = 0;
 
-    public const MINOR_VERSION = 1;
+    public const MINOR_VERSION = 2;
 
     /**
      * Retrieve the `\GuzzleHttp\Client` instance.

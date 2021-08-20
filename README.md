@@ -42,7 +42,7 @@ composer require easyalipay/easyalipay
 
 ```json
 "require": {
-    "easyalipay/easyalipay": "^0.1"
+    "easyalipay/easyalipay": "^0.2"
 }
 ```
 
