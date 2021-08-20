@@ -2,16 +2,14 @@
 
 namespace EasyAlipay\Tests;
 
-use function abs;
 use function array_map;
-use function array_reduce;
-use function class_implements;
-use function class_uses;
-use function explode;
-use function is_array;
+use function json_decode;
 use function json_encode;
+use function openssl_pkey_get_private;
+use function openssl_pkey_get_public;
+use function sprintf;
+use function strlen;
 use function strval;
-use function trim;
 
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
