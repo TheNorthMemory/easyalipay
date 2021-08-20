@@ -157,14 +157,14 @@ use Psr\Http\Message\ResponseInterface;
 
 $res = $instance
 ->alipay->trade->pay
-->postAsync([
+->postAsync(['content' => [
     'out_trade_no' => '20150320010101001',
     'scene'        => 'bar_code',
     'auth_code'    => '28763443825664394',
     'product_code' => 'FACE_TO_FACE_PAYMENT',
     'subject'      => 'Iphone6 16G',
     'total_amount' => '88.88',
-])
+]])
 ->then(static function(ResponseInterface $response) {
     // 正常逻辑回调处理
     return Utils::jsonDecode((string) $response->getBody(), true);
@@ -243,12 +243,12 @@ use GuzzleHttp\Exception\RequestException;
 
 try {
     $res = $instance['alipay.trade.page.pay']
-    ->post([
+    ->post(['content' => [
         'subject'      => '商品名称',
         'out_trade_no' => '22',
         'total_amount' => '0.01',
         'product_code' => 'FAST_INSTANT_TRADE_PAY',
-    ]);
+    ], 'pager' => true]);
     echo $resp->getBody(), PHP_EOL;
 } catch (RequestException $e) {
     // 进行错误处理
