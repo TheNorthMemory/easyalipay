@@ -59,8 +59,15 @@ composer install
 1. 请求 接入方法 `method` 切分后的每个`attributes`，可直接以对象获取形式串接，例如 `alipay.trade.query` 即串成 `alipay->trade->query`;
 2. 每个 接入方法 `method` 所支持的 `HTTP METHOD`，即作为被串接对象的末尾执行方法，例如: `alipay->trade->query->post(['content' => []])`;
 3. 每个 接入方法 `method` 所支持的 `HTTP METHOD`，同时支持`Async`语法糖，例如: `alipay->trade->query->postAsync(['content' => []])`;
-4. 每个 接入方法 `method` 可以使用驼峰`PascalCase`风格书写，例如: `alipay.trade.query`可写成 `AlipayTradeQuery`;
+4. 每个 接入方法 `method` 可以使用`PascalCase`风格书写，例如: `alipay.trade.query`可写成 `AlipayTradeQuery`;
 5. 在IDE集成环境下，也可以按照内置的`chain($method)`接口规范，直接以接入方法 `method`作为变量入参，来获取`OpenAPI`当前接入方法的实例，驱动末尾执行方法(填入对应参数)，发起请求，例如 `chain('alipay.trade.query')->post(['content' => []])`；
+6. 末尾`get`/`post`/`getAsync`/`postAsync`请求方法语法糖，型参`$options`语法糖规则如下：
+   1. `content`字典，对应的是`请求参数集合(biz_content)`字典，直接写原生`PHP array`即可；
+   2. `query`字典，对应的是除`请求参数集合(biz_content)`之外的，如部分特殊`公共请求参数(system_params)`有`通知地址(notify_url)`等，直接写原生`PHP array`即可；
+   3. 一个入参时`$options`按需带入`'content' => []` 及/或 `'query' => []`结构即可；
+   4. 简写语法糖支持`[get|post][Async](array $content, array $options)`、`[get|post][Async](array $content, array $query, array $options)`结构；
+   5. 本SDK所有`请求数据结构`遵循官方开发文档，该是蛇型即蛇形(如:`service_code`)，该是驼峰就驼峰(如:`shopIds`)，看到的数据结构，即`请求数据结构`，原生`PHP`语法即可；
+7. 内置`返回值验签`中间件在解构原始`json`字符串后，直接返回`*_response`对应的内容，有可能是`json`，也可能是`AesCbc`加密串，按需对返回串做处理；
 
 以下示例用法，以`异步(Async/PromiseA+)`或`同步(Sync)`结合此种编码模式展开。
 
