@@ -3,8 +3,7 @@
 namespace EasyAlipay;
 
 use const ENT_COMPAT;
-use const SORT_FLAG_CASE;
-use const SORT_NATURAL;
+use const SORT_STRING;
 
 use function array_keys;
 use function array_map;
@@ -50,7 +49,7 @@ class Formatter
     }
 
     /**
-     * Sort an array by key with `SORT_FLAG_CASE | SORT_NATURAL` flag.
+     * Sort an array by key with `SORT_STRING` flag.
      *
      * @param array<string, string|int> $thing - The input array.
      *
@@ -58,7 +57,7 @@ class Formatter
      */
     public static function ksort(array $thing = []): array
     {
-        ksort($thing, SORT_FLAG_CASE | SORT_NATURAL);
+        ksort($thing, SORT_STRING);
 
         return $thing;
     }

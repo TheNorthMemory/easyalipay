@@ -77,7 +77,7 @@ class FormatterTest extends TestCase
             ],
             'key with numeric' => [
                 ['rfc1' => '1', 'b' => '4', 'rfc822' => '2', 'rfc2086' => '3'],
-                ['b' => '4', 'rfc1' => '1', 'rfc822' => '2', 'rfc2086' => '3'],
+                ['b' => '4', 'rfc1' => '1', 'rfc2086' => '3', 'rfc822' => '2'],
             ],
         ];
     }
@@ -89,7 +89,7 @@ class FormatterTest extends TestCase
      */
     public function testKsort(array $thing, array $excepted): void
     {
-        self::assertEquals(Formatter::ksort($thing), $excepted);
+        self::assertSame(Formatter::ksort($thing), $excepted);
     }
 
     /**
@@ -117,7 +117,7 @@ class FormatterTest extends TestCase
     public function testNativeKsort(array $thing, array $excepted): void
     {
         self::assertTrue(ksort($thing));
-        self::assertEquals($thing, $excepted);
+        self::assertSame($thing, $excepted);
     }
 
     /**
@@ -158,7 +158,7 @@ class FormatterTest extends TestCase
     {
         $value = Formatter::queryStringLike($thing);
         self::assertIsString($value);
-        self::assertEquals($value, $excepted);
+        self::assertSame($value, $excepted);
     }
 
     /**
@@ -236,7 +236,7 @@ class FormatterTest extends TestCase
             self::assertRegExp(static::REGULAR_YMDHIS, $datetime);
         }
 
-        self::assertEquals($excepted, $datetime);
+        self::assertSame($excepted, $datetime);
     }
 
     /**
@@ -294,7 +294,7 @@ class FormatterTest extends TestCase
         self::assertArrayHasKey('payload', $things);
         self::assertArrayHasKey('sign', $things);
         self::assertTrue(count($things) === 3);
-        self::assertEquals($excepted, $things);
+        self::assertSame($excepted, $things);
     }
 
     /**

@@ -10,6 +10,8 @@ use const PHP_VERSION;
 
 use function array_replace_recursive;
 use function call_user_func;
+use function constant;
+use function defined;
 use function implode;
 use function is_callable;
 use function is_string;
