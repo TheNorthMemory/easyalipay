@@ -3,7 +3,6 @@
 namespace EasyAlipay;
 
 use const ENT_COMPAT;
-use const PREG_UNMATCHED_AS_NULL;
 use const SORT_FLAG_CASE;
 use const SORT_NATURAL;
 
