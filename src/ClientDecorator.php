@@ -8,10 +8,8 @@ use const PHP_OS;
 use const PHP_QUERY_RFC1738;
 use const PHP_VERSION;
 
-use function array_push;
 use function array_replace_recursive;
-use function extension_loaded;
-use function function_exists;
+use function call_user_func;
 use function implode;
 use function is_callable;
 use function is_string;
@@ -65,9 +63,9 @@ final class ClientDecorator implements ClientDecoratorInterface
      *
      * @return array<string,mixed> - With the built-in configuration.
      */
-    protected static function withDefaults(array $config = []): array
+    protected static function withDefaults(array ...$config): array
     {
-        return array_replace_recursive(static::$defaults, ['headers' => static::userAgent()], $config);
+        return array_replace_recursive(static::$defaults, ['headers' => static::userAgent()], ...$config);
     }
 
     /**
@@ -77,16 +75,13 @@ final class ClientDecorator implements ClientDecoratorInterface
      */
     protected static function userAgent(): array
     {
-        $value = [
+        return ['User-Agent' => implode(' ', [
             sprintf('EasyAlipay/%d.%d', static::MAJOR_VERSION, static::MINOR_VERSION),
-            sprintf('GuzzleHttp/%d', Client::MAJOR_VERSION),
-        ];
-
-        extension_loaded('curl') && function_exists('curl_version') && array_push($value, 'curl/' . ((array)curl_version())['version']);
-
-        array_push($value, sprintf('(%s/%s) PHP/%s', PHP_OS, php_uname('r'), PHP_VERSION));
-
-        return ['User-Agent' => implode(' ', $value)];
+            sprintf('GuzzleHttp/%s', constant(Client::class . (defined(Client::class . '::VERSION') ? '::VERSION' : '::MAJOR_VERSION'))),
+            sprintf('curl/%s', ((array)call_user_func('\curl_version'))['version'] ?? 'unknown'),
+            sprintf('(%s/%s)', PHP_OS, php_uname('r')),
+            sprintf('PHP/%s', PHP_VERSION),
+        ])];
     }
 
     /**

@@ -112,7 +112,7 @@ class Formatter
         $pattern = "#^{$maybe}\{{$maybe}\"{$placeholder}\"{$maybe}:{$maybe}\"?(?<payload>.*?)\"?{$maybe}"
                  . "(?:,)?{$maybe}(?:\"sign\"{$maybe}:{$maybe}\"(?<sign>[^\"]+)\"{$maybe})?\}{$maybe}$#m";
 
-        preg_match($pattern, $source, $matches, PREG_UNMATCHED_AS_NULL);
+        preg_match($pattern, $source, $matches);
 
         return ['ident' => $matches['ident'] ?? null, 'payload' => $matches['payload'] ?? null, 'sign' => $matches['sign'] ?? null];
     }
