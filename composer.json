@@ -1,6 +1,5 @@
 {
     "name": "easyalipay/easyalipay",
-    "version": "0.2.0",
     "description": "[A]Sync Chainable Alipay OpenAPI SDK for PHP",
     "type": "library",
     "keywords": [
