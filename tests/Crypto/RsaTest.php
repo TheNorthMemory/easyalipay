@@ -12,7 +12,6 @@ use function preg_match;
 use function preg_replace;
 use function random_bytes;
 use function sprintf;
-use function strncasecmp;
 use function substr;
 
 use EasyAlipay\Formatter;
@@ -130,21 +129,21 @@ class RsaTest extends TestCase
     }
 
     /**
-     * @return array<string,array{string}>
+     * @return array<string,array{string,boolean|string}>
      */
     public function keyPhrasesDataProvider(): array
     {
         return [
-            '`private.pkcs1://` string'               => ['private.pkcs1://' . $this->getMockContents('pkcs1', 'key')],
-            '`private.pkcs8://` string'               => ['private.pkcs8://' . $this->getMockContents('pkcs8', 'key')],
-            '`public.spki://` string'                 => ['public.spki://' . $this->getMockContents('spki', 'pem')],
-            '`file://` PKCS#1 privateKey path string' => [$f = 'file://' . sprintf(static::FIXTURES, 'pkcs1', 'key')],
-            'PKCS#1 privateKey contents'              => [(string)file_get_contents($f)],
-            '`file://` PKCS#8 privateKey path string' => [$f = 'file://' . sprintf(static::FIXTURES, 'pkcs8', 'key')],
-            'PKCS#8 privateKey contents'              => [(string)file_get_contents($f)],
-            '`file://` SPKI publicKey path string'    => [$f = 'file://' . sprintf(static::FIXTURES, 'spki', 'pem')],
-            'SKPI publicKey contents'                 => [(string)file_get_contents($f)],
-            '`public.pkcs1://` string'                => ['public.pkcs1://' . $this->getMockContents('pkcs1', 'pem')],
+            '`private.pkcs1://` string'               => ['private.pkcs1://' . $this->getMockContents('pkcs1', 'key'), Rsa::KEY_TYPE_PRIVATE],
+            '`private.pkcs8://` string'               => ['private.pkcs8://' . $this->getMockContents('pkcs8', 'key'), Rsa::KEY_TYPE_PRIVATE],
+            '`public.spki://` string'                 => ['public.spki://' . $this->getMockContents('spki', 'pem'),    Rsa::KEY_TYPE_PUBLIC],
+            '`file://` PKCS#1 privateKey path string' => [$f = 'file://' . sprintf(static::FIXTURES, 'pkcs1', 'key'),  Rsa::KEY_TYPE_PRIVATE],
+            'PKCS#1 privateKey contents'              => [(string)file_get_contents($f),                               Rsa::KEY_TYPE_PRIVATE],
+            '`file://` PKCS#8 privateKey path string' => [$f = 'file://' . sprintf(static::FIXTURES, 'pkcs8', 'key'),  Rsa::KEY_TYPE_PRIVATE],
+            'PKCS#8 privateKey contents'              => [(string)file_get_contents($f),                               Rsa::KEY_TYPE_PRIVATE],
+            '`file://` SPKI publicKey path string'    => [$f = 'file://' . sprintf(static::FIXTURES, 'spki', 'pem'),   Rsa::KEY_TYPE_PUBLIC],
+            'SKPI publicKey contents'                 => [(string)file_get_contents($f),                               Rsa::KEY_TYPE_PUBLIC],
+            '`public.pkcs1://` string'                => ['public.pkcs1://' . $this->getMockContents('pkcs1', 'pem'),  Rsa::KEY_TYPE_PUBLIC],
         ];
     }
 
@@ -152,26 +151,23 @@ class RsaTest extends TestCase
      * @dataProvider keyPhrasesDataProvider
      *
      * @param string $thing
+     * @param boolean|string $type
      */
-    public function testFrom(string $thing): void
+    public function testFrom(string $thing, $type): void
     {
-        $pkey = Rsa::from($thing);
+        $pkey = Rsa::from($thing, $type);
 
-        self::assertIsString($pkey);
+        self::assertNotFalse($pkey);
 
-        if (method_exists($this, 'assertMatchesRegularExpression')) {
-            if (0 !== strncasecmp('file://', $pkey, 7)) {
-                $this->assertMatchesRegularExpression(self::EVELOPE, $pkey);
-            }
+        if (8 === PHP_MAJOR_VERSION) {
+            self::assertIsObject($pkey);
         } else {
-            if (0 !== strncasecmp('file://', $pkey, 7)) {
-                self::assertRegExp(self::EVELOPE, $pkey);
-            }
+            self::assertIsResource($pkey);
         }
     }
 
     /**
-     * @return array<string,array{string,string,string,string}>
+     * @return array<string,array{string,\OpenSSLAsymmetricKey|resource|mixed,string,\OpenSSLAsymmetricKey|resource|mixed}>
      */
     public function keysProvider(): array
     {
@@ -245,6 +241,6 @@ class RsaTest extends TestCase
             self::assertRegExp(self::BASE64_EXPRESSION, $signature);
         }
 
-        self::assertTrue(Rsa::verify($plaintext, $signature, is_string($publicKey) ? Rsa::from($publicKey) : $publicKey, $type));
+        self::assertTrue(Rsa::verify($plaintext, $signature, is_string($publicKey) ? Rsa::from($publicKey, Rsa::KEY_TYPE_PUBLIC) : $publicKey, $type));
     }
 }

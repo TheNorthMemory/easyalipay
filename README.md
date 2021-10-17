@@ -19,10 +19,13 @@
 
 我们开发和测试使用的环境如下：
 
-+ PHP >=7.2
-+ guzzlehttp/guzzle ^7.0
++ PHP >=7.1.2
++ guzzlehttp/guzzle ^6.5 || ^7.0
 
-**注:** 随`Guzzle7`支持的PHP版本最低为`7.2.5`，`PHP`小于这个版本的请选择其他优秀SDK；另PHP官方已于`30 Nov 2020`停止维护`PHP7.2`，详见附注链接。
+**注:**
+
+- 兼容支持`Guzzle6`的PHP最低版本为`7.1.2`，另PHP官方已于`1 Dec 2019`停止维护`PHP7.1`，详见附注链接；
+- 随`Guzzle7`支持的PHP最低版本为`7.2.5`，另PHP官方已于`30 Nov 2020`停止维护`PHP7.2`，详见附注链接；
 
 ## 安装
 
@@ -42,7 +45,7 @@ composer require easyalipay/easyalipay
 
 ```json
 "require": {
-    "easyalipay/easyalipay": "^0.2"
+    "easyalipay/easyalipay": "^0.3"
 }
 ```
 
@@ -92,9 +95,9 @@ $privateKey = Rsa::fromPkcs1('MIIEpAIBAAKCAQEApdXuft3as2x...');
 //支付宝RSA公钥，入参是'从官方工具获取到的BASE64字符串'
 $publicKey = Rsa::fromSpki('MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCg...');
 // 以上是下列代码的语法糖，格式为 'public.spki://' + '从官方工具获取到的字符串'
-// $publicKey = Rsa::from('public.spki://MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCg...');
+// $publicKey = Rsa::from('public.spki://MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCg...', Rsa::KEY_TYPE_PUBLIC);
 // 也支持以下方式，须保证`public_key.pem`为完整X509格式
-// $publicKey = Rsa::from('file:///the/alipay/public_key.pem');
+// $publicKey = Rsa::from('file:///the/alipay/public_key.pem', Rsa::KEY_TYPE_PUBLIC);
 
 //如果是公钥证书模式，可以在工厂方法内传入 `$appCertSn` 及 `$alipayRootCertSn`
 // $appCertFilePath = '/my/cert/app_cert.crt';

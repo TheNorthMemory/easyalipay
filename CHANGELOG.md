@@ -1,5 +1,13 @@
 # 变更历史
 
+## 0.3.0 - 2021-10-17
+
+[变更细节](../../compare/v0.2.0...v0.3.0)
+
+- 新增`Guzzle6`+`PHP7.1`及`Guzzle7`+`PHP8.1`支持；
+- 调整`\EasyAlipay\Crypto\Rsa::from`方法，增加第二入参`$type(private|public)`，显示声明第一入参类型；
+- 调整`\EasyAlipay\Crypto\Rsa::fromPkcs1`方法的第二入参为`$type(private|public)`，兼容布尔量声明方式；
+
 ## 0.2.0 - 2021-08-20
 
 [变更细节](../../compare/v0.1.0...v0.2.0)
