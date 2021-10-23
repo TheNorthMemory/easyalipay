@@ -74,6 +74,12 @@ jobs:
       - run: vendor/bin/phpstan analyse --no-progress
 
       - run: |
+          pacman -S bc
+          bc --version
+        shell: bash
+        if: runner.os == 'Windows'
+
+      - run: |
           make keygen
           make x509crt
 
