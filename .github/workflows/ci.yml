@@ -74,6 +74,12 @@ jobs:
       - run: vendor/bin/phpstan analyse --no-progress
 
       - run: |
+          echo ::add-path::C:\msys64\usr\bin
+          dir C:\msys64\usr\bin
+        shell: cmd
+        if: runner.os == 'Windows'
+
+      - run: |
           pacman -S bc
           bc --version
         shell: bash
