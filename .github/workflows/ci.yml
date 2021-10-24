@@ -73,17 +73,6 @@ jobs:
 
       - run: vendor/bin/phpstan analyse --no-progress
 
-      - uses: msys2/setup-msys2@v2
-        with:
-          install: bc
-        if: runner.os == 'Windows'
-
-      - run: |
-          openssl version
-          bc --version
-        shell: msys2 {0}
-        if: runner.os == 'Windows'
-
       - run: |
           make keygen
           make x509crt
