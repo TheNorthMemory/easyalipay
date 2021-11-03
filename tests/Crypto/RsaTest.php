@@ -38,10 +38,10 @@ class RsaTest extends TestCase
      */
     private function getMockContents(string $type, string $suffix): string
     {
-        $file = sprintf(static::FIXTURES, $type, $suffix);
+        $file = sprintf(self::FIXTURES, $type, $suffix);
         $pkey = file_get_contents($file);
 
-        preg_match(static::EVELOPE, $pkey ?: '', $matches);
+        preg_match(self::EVELOPE, $pkey ?: '', $matches);
 
         return preg_replace('#\r|\n#', '', $matches['base64'] ?: '');
     }
@@ -137,11 +137,11 @@ class RsaTest extends TestCase
             '`private.pkcs1://` string'               => ['private.pkcs1://' . $this->getMockContents('pkcs1', 'key'), Rsa::KEY_TYPE_PRIVATE],
             '`private.pkcs8://` string'               => ['private.pkcs8://' . $this->getMockContents('pkcs8', 'key'), Rsa::KEY_TYPE_PRIVATE],
             '`public.spki://` string'                 => ['public.spki://' . $this->getMockContents('spki', 'pem'),    Rsa::KEY_TYPE_PUBLIC],
-            '`file://` PKCS#1 privateKey path string' => [$f = 'file://' . sprintf(static::FIXTURES, 'pkcs1', 'key'),  Rsa::KEY_TYPE_PRIVATE],
+            '`file://` PKCS#1 privateKey path string' => [$f = 'file://' . sprintf(self::FIXTURES, 'pkcs1', 'key'),  Rsa::KEY_TYPE_PRIVATE],
             'PKCS#1 privateKey contents'              => [(string)file_get_contents($f),                               Rsa::KEY_TYPE_PRIVATE],
-            '`file://` PKCS#8 privateKey path string' => [$f = 'file://' . sprintf(static::FIXTURES, 'pkcs8', 'key'),  Rsa::KEY_TYPE_PRIVATE],
+            '`file://` PKCS#8 privateKey path string' => [$f = 'file://' . sprintf(self::FIXTURES, 'pkcs8', 'key'),  Rsa::KEY_TYPE_PRIVATE],
             'PKCS#8 privateKey contents'              => [(string)file_get_contents($f),                               Rsa::KEY_TYPE_PRIVATE],
-            '`file://` SPKI publicKey path string'    => [$f = 'file://' . sprintf(static::FIXTURES, 'spki', 'pem'),   Rsa::KEY_TYPE_PUBLIC],
+            '`file://` SPKI publicKey path string'    => [$f = 'file://' . sprintf(self::FIXTURES, 'spki', 'pem'),   Rsa::KEY_TYPE_PUBLIC],
             'SKPI publicKey contents'                 => [(string)file_get_contents($f),                               Rsa::KEY_TYPE_PUBLIC],
             '`public.pkcs1://` string'                => ['public.pkcs1://' . $this->getMockContents('pkcs1', 'pem'),  Rsa::KEY_TYPE_PUBLIC],
         ];

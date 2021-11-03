@@ -231,9 +231,9 @@ class FormatterTest extends TestCase
         self::assertTrue(strlen($datetime) === 19);
 
         if (method_exists($this, 'assertMatchesRegularExpression')) {
-            $this->assertMatchesRegularExpression(static::REGULAR_YMDHIS, $datetime);
+            $this->assertMatchesRegularExpression(self::REGULAR_YMDHIS, $datetime);
         } else {
-            self::assertRegExp(static::REGULAR_YMDHIS, $datetime);
+            self::assertRegExp(self::REGULAR_YMDHIS, $datetime);
         }
 
         self::assertSame($excepted, $datetime);

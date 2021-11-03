@@ -41,7 +41,7 @@ class AesCbc
         /** @var string $key */
         $key = base64_decode($cipherkey);
 
-        return [sprintf(static::MODE_CBC, strlen($key) * 8), $key, OPENSSL_RAW_DATA, $iv ?? str_repeat(static::CHR_NUL, static::BLOCK_SIZE)];
+        return [sprintf(self::MODE_CBC, strlen($key) * 8), $key, OPENSSL_RAW_DATA, $iv ?? str_repeat(self::CHR_NUL, static::BLOCK_SIZE)];
     }
 
     /**
@@ -56,7 +56,7 @@ class AesCbc
      */
     public static function encrypt(string $plaintext, string $cipherkey, ?string $iv = null): string
     {
-        $ciphertext = openssl_encrypt($plaintext, ...static::detector($cipherkey, $iv));
+        $ciphertext = openssl_encrypt($plaintext, ...self::detector($cipherkey, $iv));
 
         if (false === $ciphertext) {
             throw new UnexpectedValueException("Encrypting the {$plaintext} failed, please checking the {$cipherkey} and {$iv} whether or nor correct.");
@@ -77,7 +77,7 @@ class AesCbc
      */
     public static function decrypt(string $ciphertext, string $cipherkey, ?string $iv = null): string
     {
-        $plaintext = openssl_decrypt(base64_decode($ciphertext), ...static::detector($cipherkey, $iv));
+        $plaintext = openssl_decrypt(base64_decode($ciphertext), ...self::detector($cipherkey, $iv));
 
         if (false === $plaintext) {
             throw new UnexpectedValueException("Decrypting the {$ciphertext} failed, please checking the {$cipherkey} and {$iv} whether or nor correct.");

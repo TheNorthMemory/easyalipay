@@ -1,16 +1,22 @@
 # 变更历史
 
-## 0.3.0 - 2021-10-17
+## [0.3.2](../../compare/v0.3.1...v0.3.2) - 2021-11-03
 
-[变更细节](../../compare/v0.2.0...v0.3.0)
+- 新增`phpstan/phpstan:^1.0`支持；
+- 优化代码，消除函数内部不安全的`Unsafe call to private|protected method|property ... through static::`调用隐患；
+- 优化`Makefile`生成大数逻辑，贴近真实序列号情况；
+
+## [0.3.1](../../compare/v0.3.0...v0.3.1) - 2021-10-17
+
+- 调整`composer.json`，去除`version`字典；
+
+## [0.3.0](../../compare/v0.2.0...v0.3.0) - 2021-10-17
 
 - 新增`Guzzle6`+`PHP7.1`及`Guzzle7`+`PHP8.1`支持；
 - 调整`\EasyAlipay\Crypto\Rsa::from`方法，增加第二入参`$type(private|public)`，显示声明第一入参类型；
 - 调整`\EasyAlipay\Crypto\Rsa::fromPkcs1`方法的第二入参为`$type(private|public)`，兼容布尔量声明方式；
 
-## 0.2.0 - 2021-08-20
-
-[变更细节](../../compare/v0.1.0...v0.2.0)
+## [0.2.0](../../compare/v0.1.0...v0.2.0) - 2021-08-20
 
 - 新增`\EasyAlipay\Helpers`类，以支持`公钥证书模式`使用；
 - 新增`\EasyAlipay\Crypto\Rsa::pkcs1ToSpki`转换函数，以支持加载`PKCS#1`格式的`RSA公钥`；

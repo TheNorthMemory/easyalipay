@@ -144,8 +144,8 @@ class ClientDecoratorTest extends TestCase
      */
     private function mockConfiguration(): array
     {
-        $privateKey = openssl_pkey_get_private('file://' . sprintf(static::FIXTURES, 'pkcs8', 'key'));
-        $publicKey  = openssl_pkey_get_public('file://' . sprintf(static::FIXTURES, 'spki', 'pem'));
+        $privateKey = openssl_pkey_get_private('file://' . sprintf(self::FIXTURES, 'pkcs8', 'key'));
+        $publicKey  = openssl_pkey_get_public('file://' . sprintf(self::FIXTURES, 'spki', 'pem'));
 
         if (false === $privateKey || false === $publicKey) {
             throw new \Exception('Loading the pkey failed.');
@@ -172,35 +172,35 @@ class ClientDecoratorTest extends TestCase
         [$privateKey, $publicKey] = $this->mockConfiguration();
         /** @var array<string,string> $available */
         $available = [
-            static::CONTENT_LANGUAGE => 'zh-CN',
-            static::CONTENT_LENGTH   => '150',
-            static::CONTENT_TYPE     => 'text/html;charset=GBK',
+            self::CONTENT_LANGUAGE => 'zh-CN',
+            self::CONTENT_LENGTH   => '150',
+            self::CONTENT_TYPE     => 'text/html;charset=GBK',
         ];
         /** @var array<string,string> $unavailable */
-        $unavailable = [static::CONTENT_LENGTH => '0'];
+        $unavailable = [self::CONTENT_LENGTH => '0'];
 
         return [
             'HTTP 200, `GET` with `UTF-8` GOT `GBK` content in incompleted format' => [
                 $privateKey, $publicKey, 'GET', '',
-                static::pickResponse(200, $available,
+                self::pickResponse(200, $available,
                     $body = '<!DOCTYPE html><html>head></head><style></style><div id="Header"><script></script></div><div id="Info"></div><div id="Foot"></div><!--footer ending-->'),
                 $length = '150',
             ],
             'HTTP 200, `POST` with `UTF-8` GOT `GBK` content in incompleted format' => [
                 $privateKey, $publicKey, 'POST', '',
-                static::pickResponse(200, $available, $body), $length,
+                self::pickResponse(200, $available, $body), $length,
             ],
             'HTTP 200 `PATCH` with `UTF-8` GOT nothing' => [
                 $privateKey, $publicKey, 'PATCH', '',
-                static::pickResponse(200, $unavailable), $length = '0',
+                self::pickResponse(200, $unavailable), $length = '0',
             ],
             'HTTP 200 `PUT` with `UTF-8` GOT nothing' => [
                 $privateKey, $publicKey, 'PUT', '',
-                static::pickResponse(200, $unavailable), $length,
+                self::pickResponse(200, $unavailable), $length,
             ],
             'HTTP 200 `DELETE` with `UTF-8` GOT nothing' => [
                 $privateKey, $publicKey, 'DELETE', '',
-                static::pickResponse(200, $unavailable), $length,
+                self::pickResponse(200, $unavailable), $length,
             ],
         ];
     }
@@ -227,14 +227,14 @@ class ClientDecoratorTest extends TestCase
         $this->mock->append($response);
 
         $res = $instance->request($method, $uri);
-        self::assertTrue($res->hasHeader(static::CONTENT_LENGTH));
+        self::assertTrue($res->hasHeader(self::CONTENT_LENGTH));
         /** @var string $length */
-        [$length] = $res->getHeader(static::CONTENT_LENGTH);
+        [$length] = $res->getHeader(self::CONTENT_LENGTH);
         self::assertIsString($length);
         self::assertEquals($length, $contentLength);
         if ($length !== '0') {
-            self::assertTrue($res->hasHeader(static::CONTENT_TYPE));
-            self::assertTrue($res->hasHeader(static::CONTENT_LANGUAGE));
+            self::assertTrue($res->hasHeader(self::CONTENT_TYPE));
+            self::assertTrue($res->hasHeader(self::CONTENT_LANGUAGE));
         }
     }
 
@@ -266,14 +266,14 @@ class ClientDecoratorTest extends TestCase
             static::assertInstanceOf(\GuzzleHttp\Psr7\Request::class, $req);
             static::assertEquals($method, $req->getMethod());
             static::assertNotEquals($uri, $req->getRequestTarget());
-            static::assertTrue($res->hasHeader(static::CONTENT_LENGTH));
+            static::assertTrue($res->hasHeader(self::CONTENT_LENGTH));
             /** @var string $length */
-            [$length] = $res->getHeader(static::CONTENT_LENGTH);
+            [$length] = $res->getHeader(self::CONTENT_LENGTH);
             static::assertIsString($length);
             static::assertEquals($length, $contentLength);
             if ($length !== '0') {
-                static::assertTrue($res->hasHeader(static::CONTENT_TYPE));
-                static::assertTrue($res->hasHeader(static::CONTENT_LANGUAGE));
+                static::assertTrue($res->hasHeader(self::CONTENT_TYPE));
+                static::assertTrue($res->hasHeader(self::CONTENT_LANGUAGE));
             }
         })->wait();
     }
@@ -309,7 +309,7 @@ class ClientDecoratorTest extends TestCase
     }
 
     /**
-     * @return array<string,array{mixed,mixed,string,string,string,string,array<string,mixed>,callable<ResponseInterface>}>
+     * @return array<string,array{mixed,mixed,string,string,string,string,array<string,mixed>,callable}>
      */
     public function normalRequestsDataProvider(): array
     {
@@ -320,7 +320,7 @@ class ClientDecoratorTest extends TestCase
                 $privateKey, $publicKey, $appId = '2014072300007148', 'POST', '', $entryMethod = 'easy.alipay.ping',
                 $content = ['app_id' => $appId, 'user_id' => 'abcd1234'],
                 static function(RequestInterface $request) use ($privateKey, $publicKey, $appId, $entryMethod, $content): ResponseInterface {
-                    static::verification($request, $appId, $entryMethod, $content, $publicKey);
+                    self::verification($request, $appId, $entryMethod, $content, $publicKey);
 
                     $body = sprintf(
                         '{"%s%s":%s,"sign":"%s"}',
@@ -329,9 +329,9 @@ class ClientDecoratorTest extends TestCase
                         Rsa::sign($payload, $privateKey)
                     );
                     /** @var array<string,mixed> $headers */
-                    $headers = [static::CONTENT_LENGTH => strlen($body), static::CONTENT_TYPE => 'text/html;charset=utf-8'];
+                    $headers = [self::CONTENT_LENGTH => strlen($body), self::CONTENT_TYPE => 'text/html;charset=utf-8'];
 
-                    return static::pickResponse(200, $headers, $body);
+                    return self::pickResponse(200, $headers, $body);
                 },
             ],
         ];
@@ -365,9 +365,9 @@ class ClientDecoratorTest extends TestCase
 
         array_map(static function($key) use($res): void {
             static::assertTrue($res->hasHeader($key));
-        }, [static::X_ALIPAY_RESPONDER, static::X_ALIPAY_VERIFIED, static::X_ALIPAY_SIGNATURE]);
+        }, [self::X_ALIPAY_RESPONDER, self::X_ALIPAY_VERIFIED, self::X_ALIPAY_SIGNATURE]);
 
-        self::assertEquals('ok', $res->getHeaderLine(static::X_ALIPAY_VERIFIED));
+        self::assertEquals('ok', $res->getHeaderLine(self::X_ALIPAY_VERIFIED));
         self::assertEquals($content, json_decode((string)$res->getBody(), true));
     }
 
@@ -400,8 +400,8 @@ class ClientDecoratorTest extends TestCase
         ->then(static function(ResponseInterface $res) use($content) {
             array_map(static function($key) use($res): void {
                 static::assertTrue($res->hasHeader($key));
-            }, [static::X_ALIPAY_RESPONDER, static::X_ALIPAY_VERIFIED, static::X_ALIPAY_SIGNATURE]);
-            static::assertEquals('ok', $res->getHeaderLine(static::X_ALIPAY_VERIFIED));
+            }, [self::X_ALIPAY_RESPONDER, self::X_ALIPAY_VERIFIED, self::X_ALIPAY_SIGNATURE]);
+            static::assertEquals('ok', $res->getHeaderLine(self::X_ALIPAY_VERIFIED));
             static::assertEquals($content, json_decode((string)$res->getBody(), true));
         })->wait();
     }

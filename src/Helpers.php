@@ -39,13 +39,13 @@ class Helpers
     /**
      * MD5 hash function
      *
-     * @param string[] $things - To caculating things
+     * @param string $things - To caculating things
      *
      * @return string - The digest string
      */
-    public static function md5(...$things): string
+    public static function md5(string ...$things): string
     {
-        $ctx = hash_init(static::ALGO_MD5);
+        $ctx = hash_init(self::ALGO_MD5);
 
         array_walk($things, static function(string $thing) use ($ctx): void { hash_update($ctx, $thing); });
 
@@ -58,20 +58,21 @@ class Helpers
      * @param string $thing - The certificatie(s) file path string or `data://text/plain;utf-8,...` (RFC2397) string
      * @param string $pattern - The signatureAlgorithm matching pattern, default is `null` means for all
      *
-     * @return array<?array{pem:string,attr:array<mixed>}> - The X509 Certificate instance list.
+     * @return array<array{'pem':string,'attr':array<mixed>}> - The X509 Certificate instance list.
      */
     public static function load(string $thing, ?string $pattern = null): array
     {
-        preg_match_all(static::X509_CERT_FORMAT, file_get_contents($thing) ?: '', $matches);
+        preg_match_all(self::X509_CERT_FORMAT, file_get_contents($thing) ?: '', $matches);
 
         $certs = $matches['cert'] ?? [];
 
         array_walk($certs, static function(string &$cert) use ($pattern): void {
             $attr = openssl_x509_parse($cert, true);
-            [static::X509_ASN1_CERT_SIGNATURE_LONG_NAME => $algo] = $attr ?: [static::X509_ASN1_CERT_SIGNATURE_LONG_NAME => null];
-            $cert = $pattern && $algo && false === stripos($algo, $pattern) ? null : [static::CERT_PEM => $cert, static::CERT_ATTR => $attr];
+            [self::X509_ASN1_CERT_SIGNATURE_LONG_NAME => $algo] = $attr ?: [self::X509_ASN1_CERT_SIGNATURE_LONG_NAME => null];
+            $cert = $pattern && $algo && false === stripos($algo, $pattern) ? null : [self::CERT_PEM => $cert, self::CERT_ATTR => $attr];
         });
 
+        /** @var array<array{'pem':string,'attr':array<mixed>}> $certs */
         return array_filter($certs);
     }
 
@@ -107,7 +108,7 @@ class Helpers
              * @var array<string,string> $issuer
              * @var string $serial
              */
-            [static::X509_ASN1_CERT_ISSUER => $issuer, static::X509_ASN1_CERT_SERIAL => $serial] = $cert[static::CERT_ATTR];
+            [self::X509_ASN1_CERT_ISSUER => $issuer, self::X509_ASN1_CERT_SERIAL => $serial] = $cert[self::CERT_ATTR];
 
             $carry[] = static::md5(static::fold($issuer), $serial);
 
