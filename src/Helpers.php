@@ -25,7 +25,7 @@ class Helpers
 {
     private const ALGO_MD5 = 'md5';
 
-    private const X509_CERT_FORMAT = '#(?<cert>-----BEGIN CERTIFICATE-----(?:[^-]+)-----END CERTIFICATE-----)#';
+    private const X509_CERT_FORMAT_PATTERN = '#(?<cert>-{5}BEGIN CERTIFICATE-{5}(?:[^-]+)-{5}END CERTIFICATE-{5})#';
     private const X509_ASN1_CERT_SIGNATURE_LONG_NAME = 'signatureTypeLN';
     private const X509_ASN1_CERT_ISSUER = 'issuer';
     private const X509_ASN1_CERT_SERIAL = 'serialNumber';
@@ -62,7 +62,7 @@ class Helpers
      */
     public static function load(string $thing, ?string $pattern = null): array
     {
-        preg_match_all(self::X509_CERT_FORMAT, file_get_contents($thing) ?: '', $matches);
+        preg_match_all(self::X509_CERT_FORMAT_PATTERN, file_get_contents($thing) ?: '', $matches);
 
         $certs = $matches['cert'] ?? [];
 

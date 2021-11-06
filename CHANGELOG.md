@@ -1,6 +1,11 @@
 # 变更历史
 
-## [0.3.2](../../compare/v0.3.1...v0.3.2) - 2021-11-03
+## [0.3.3](../../compare/0.3.2...0.3.3) - 2021-11-06
+
+- 优化`Rsa::parse`代码逻辑，去除`is_resource`/`is_object`检测;
+- 调整`Rsa::from[Pkcs8|Pkcs1|Spki]`加载语法糖实现，以`Rsa::from`为统一入口；
+
+## [0.3.2](../../compare/v0.3.1...0.3.2) - 2021-11-03
 
 - 新增`phpstan/phpstan:^1.0`支持；
 - 优化代码，消除函数内部不安全的`Unsafe call to private|protected method|property ... through static::`调用隐患；

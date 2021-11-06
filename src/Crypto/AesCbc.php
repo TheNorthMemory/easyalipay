@@ -59,7 +59,7 @@ class AesCbc
         $ciphertext = openssl_encrypt($plaintext, ...self::detector($cipherkey, $iv));
 
         if (false === $ciphertext) {
-            throw new UnexpectedValueException("Encrypting the {$plaintext} failed, please checking the {$cipherkey} and {$iv} whether or nor correct.");
+            throw new UnexpectedValueException("Encrypting the {$plaintext} failed, please checking the \$cipherkey and \$iv whether or nor correct.");
         }
 
         return base64_encode($ciphertext);
@@ -80,7 +80,7 @@ class AesCbc
         $plaintext = openssl_decrypt(base64_decode($ciphertext), ...self::detector($cipherkey, $iv));
 
         if (false === $plaintext) {
-            throw new UnexpectedValueException("Decrypting the {$ciphertext} failed, please checking the {$cipherkey} and {$iv} whether or nor correct.");
+            throw new UnexpectedValueException("Decrypting the {$ciphertext} failed, please checking the \$cipherkey and \$iv whether or nor correct.");
         }
 
         return $plaintext;

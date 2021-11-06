@@ -10,11 +10,8 @@ use function array_keys;
 use function base64_decode;
 use function base64_encode;
 use function gettype;
-use function is_array;
 use function is_bool;
 use function is_int;
-use function is_object;
-use function is_resource;
 use function is_string;
 use function ltrim;
 use function openssl_pkey_get_private;
@@ -43,9 +40,9 @@ class Rsa
     /** @var string - Alias of the `sha256WithRSAEncryption` algothrim */
     public const ALGO_TYPE_RSA2 = 'RSA2';
 
-    /** asymmetric public key type string */
+    /** @var string - Type string of the asymmetric key */
     public const KEY_TYPE_PUBLIC = 'public';
-    /** asymmetric private key type string */
+    /** @var string - Type string of the asymmetric key */
     public const KEY_TYPE_PRIVATE = 'private';
 
     /** @var array{'RSA':'sha1WithRSAEncryption','RSA2':'sha256WithRSAEncryption'} */
@@ -117,13 +114,7 @@ class Rsa
      */
     public static function fromPkcs8(string $thing)
     {
-        $pkey = openssl_pkey_get_private(self::parse(sprintf('private.pkcs8://%s', $thing)));
-
-        if (false === $pkey) {
-            throw new UnexpectedValueException(sprintf('Cannot load the PKCS#8 privateKey(%s).', $thing));
-        }
-
-        return $pkey;
+        return static::from(sprintf('private.pkcs8://%s', $thing), static::KEY_TYPE_PRIVATE);
     }
 
     /**
@@ -138,15 +129,9 @@ class Rsa
      */
     public static function fromPkcs1(string $thing, $type = self::KEY_TYPE_PRIVATE)
     {
-        $pkey = ($isPublic = is_bool($type) ? $type : $type === static::KEY_TYPE_PUBLIC)
-            ? openssl_pkey_get_public(self::parse(sprintf('public.pkcs1://%s', $thing), $type))
-            : openssl_pkey_get_private(self::parse(sprintf('private.pkcs1://%s', $thing)));
-
-        if (false === $pkey) {
-            throw new UnexpectedValueException(sprintf('Cannot load the PKCS#1 %s(%s).', $isPublic ? 'publicKey' : 'privateKey', $thing));
-        }
-
-        return $pkey;
+        return static::from(sprintf('%s://%s',
+            ((is_bool($type) && $type) || $type === static::KEY_TYPE_PUBLIC)
+                ? 'public.pkcs1' : 'private.pkcs1', $thing), $type);
     }
 
     /**
@@ -158,13 +143,7 @@ class Rsa
      */
     public static function fromSpki(string $thing)
     {
-        $pkey = openssl_pkey_get_public(self::parse(sprintf('public.spki://%s', $thing), static::KEY_TYPE_PUBLIC));
-
-        if (false === $pkey) {
-            throw new UnexpectedValueException(sprintf('Cannot load the SPKI publicKey(%s).', $thing));
-        }
-
-        return $pkey;
+        return static::from(sprintf('public.spki://%s', $thing), static::KEY_TYPE_PUBLIC);
     }
 
     /**
@@ -193,9 +172,9 @@ class Rsa
 
         if (false === $pkey) {
             throw new UnexpectedValueException(sprintf(
-                'Cannot load %s from(%s).',
+                'Cannot load %s from(%s), please take care about the \$thing input.',
                 $isPublic ? 'publicKey' : 'privateKey',
-                is_string($thing) ? $thing : gettype($thing)
+                gettype($thing)
             ));
         }
 
@@ -236,18 +215,23 @@ class Rsa
      *
      * @param \OpenSSLAsymmetricKey|\OpenSSLCertificate|resource|array{string,string}|string|mixed $thing - The thing.
      * @param boolean|string $type - Either `self::KEY_TYPE_PUBLIC` or `self::KEY_TYPE_PRIVATE` string, default is `self::KEY_TYPE_PRIVATE`.
-     * @return \OpenSSLAsymmetricKey|resource|array{string,string}|string|mixed
+     * @return \OpenSSLAsymmetricKey|\OpenSSLCertificate|resource|array{string,string}|string|mixed
      */
     private static function parse($thing, $type = self::KEY_TYPE_PRIVATE)
     {
         $src = $thing;
 
-        if (is_resource($src) || is_object($src) || is_array($src) || (is_string($src) && is_int(strpos($src, self::LOCAL_FILE_PROTOCOL)))) {
-            return $src;
+        if (is_string($src) && is_int(strpos($src, self::PKEY_PEM_NEEDLE))
+            && ((is_bool($type) && $type) || $type === self::KEY_TYPE_PUBLIC) && preg_match(self::PKEY_PEM_FORMAT_PATTERN, $src, $matches)) {
+            [, $kind, $base64] = $matches;
+            $mapRules = (array)array_combine(array_column(self::RULES, 1/*column*/), array_keys(self::RULES));
+            $protocol = $mapRules[$kind] ?? '';
+            if ('public.pkcs1' === $protocol) {
+                $src = sprintf('%s://%s', $protocol, str_replace([self::CHR_CR, self::CHR_LF], '', $base64));
+            }
         }
 
-        /** @var string $src */
-        if (is_int(strpos($src, '://'))) {
+        if (is_string($src) && is_bool(strpos($src, self::LOCAL_FILE_PROTOCOL)) && is_int(strpos($src, '://'))) {
             $protocol = parse_url($src, PHP_URL_SCHEME);
             [$format, $kind, $offset] = self::RULES[$protocol] ?? [null, null, null];
             if ($format && $kind && $offset) {
@@ -257,17 +241,6 @@ class Rsa
                     [$format, $kind] = self::RULES['public.spki'];
                 }
                 return sprintf($format, $kind, wordwrap($src, 64, self::CHR_LF, true));
-            }
-        }
-
-        if (is_int(strpos($src, self::PKEY_PEM_NEEDLE))) {
-            if (((is_bool($type) && $type) || $type === self::KEY_TYPE_PUBLIC) && preg_match(self::PKEY_PEM_FORMAT_PATTERN, $src, $matches)) {
-                [, $kind, $base64] = $matches;
-                $mapRules = (array)array_combine(array_column(self::RULES, 1/*column*/), array_keys(self::RULES));
-                $protocol = $mapRules[$kind] ?? '';
-                if ('public.pkcs1' === $protocol) {
-                    return self::parse(sprintf('%s://%s', $protocol, str_replace([self::CHR_CR, self::CHR_LF], '', $base64)), $type);
-                }
             }
         }
 
