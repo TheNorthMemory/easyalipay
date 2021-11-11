@@ -18,8 +18,8 @@ final class Builder
      * Building & decorate the chainable `\GuzzleHttp\Client`
      *
      * Acceptable \$config parameters stucture
-     *   - privateKey: \OpenSSLAsymmetricKey|object|resource|string - The merchant private key.
-     *   - publicKey: \OpenSSLAsymmetricKey|object|resource|string - The platform public key.
+     *   - privateKey: \OpenSSLAsymmetricKey|resource|string - The merchant private key.
+     *   - publicKey: \OpenSSLAsymmetricKey|resource|string - The platform public key.
      *   - params?: array{app_id?:string, app_auth_token?:string, app_cert_sn?:string, alipay_root_cert_sn?:string}
      *   - params<?app_id, string> - The app_id string. (optional)
      *   - params<?app_auth_token, string> - The ISV auth token string. (optional)
@@ -30,7 +30,7 @@ final class Builder
      * // usage samples
      * $instance = Builder::factory([]);
      * $instance->chain('alipay.offline.market.shop.category.query')->get(['debug' => true]);
-     * $instance->Alipay->Offline->Market->Shop->Category->Query->getAsync(['debug' => true])->wait();
+     * $instance->alipay->offline->marketShopCategoryQuery->getAsync(['debug' => true])->wait();
      * ```
      * @param array<string,mixed> $config - configuration .
      */

@@ -155,7 +155,7 @@ final class ClientDecorator implements ClientDecoratorInterface
     }
 
     /**
-     * @param \OpenSSLAsymmetricKey|\OpenSSLCertificate|object|resource|string $publicKey The platform publicKey
+     * @param \OpenSSLAsymmetricKey|\OpenSSLCertificate|resource|string $publicKey The platform publicKey
      *
      * @return callable(callable(RequestInterface,array<string,mixed>))
      */
@@ -185,8 +185,8 @@ final class ClientDecorator implements ClientDecoratorInterface
      * Decorate the `\GuzzleHttp\Client` factory
      *
      * Acceptable \$config parameters stucture
-     *   - privateKey: \OpenSSLAsymmetricKey|object|resource|string - The merchant private key.
-     *   - publicKey: \OpenSSLAsymmetricKey|object|resource|string - The platform public key.
+     *   - privateKey: \OpenSSLAsymmetricKey|resource|string - The merchant private key.
+     *   - publicKey: \OpenSSLAsymmetricKey|resource|string - The platform public key.
      *   - params?: array{app_id?:string, app_auth_token?:string, app_cert_sn?:string, alipay_root_cert_sn?:string}
      *   - params<?app_id, string> - The app_id string. (optional)
      *   - params<?app_auth_token, string> - The ISV auth token string. (optional)
