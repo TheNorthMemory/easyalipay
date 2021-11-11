@@ -155,7 +155,7 @@ final class ClientDecorator implements ClientDecoratorInterface
     }
 
     /**
-     * @param \OpenSSLAsymmetricKey|\OpenSSLCertificate|resource|string $publicKey The platform publicKey
+     * @param \OpenSSLAsymmetricKey|\OpenSSLCertificate|resource|string|mixed $publicKey The platform publicKey
      *
      * @return callable(callable(RequestInterface,array<string,mixed>))
      */
