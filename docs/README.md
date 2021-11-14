@@ -42,17 +42,16 @@ $instance = Builder::factory([
 方法|属性链|说明
 ---|---|---
 `alipay.trade.create`|`->alipay->trade->create`|统一收单交易创建接口
-`alipay.trade.query`|`->alipay->trade->query`
-`alipay.trade.refund`|`->alipay->trade->refund`
-`alipay.trade.close`|`->alipay->trade->close`
-`alipay.trade.fastpay.refund.query`|`->alipay->trade->fastpayRefundQuery`
-`alipay.data.dataservice.bill.downloadurl.query`|`->alipay->data->dataserviceBillDownloadurlQuery`
-`alipay.trade.create`|`->alipay->trade->create`
-`alipay.trade.pay`|`->alipay->trade->pay`
-`alipay.trade.precreate`|`->alipay->trade->precreate`
-`alipay.trade.app.pay`|`->alipay->trade->appPay`
-`alipay.trade.page.pay`|`->alipay->trade->pagePay`
-`alipay.trade.wap.pay`|`->alipay->trade->wapPay`
+`alipay.trade.query`|`->alipay->trade->query`|统一收单线下交易查询接口
+`alipay.trade.refund`|`->alipay->trade->refund`|统一收单交易退款接口
+`alipay.trade.close`|`->alipay->trade->close`|统一收单交易关闭接口
+`alipay.trade.fastpay.refund.query`|`->alipay->trade->fastpayRefundQuery`|统一收单交易退款查询接口
+`alipay.data.dataservice.bill.downloadurl.query`|`->alipay->data->dataserviceBillDownloadurlQuery`|查询对账单下载地址接口
+`alipay.trade.pay`|`->alipay->trade->pay`|统一收单交易支付接口
+`alipay.trade.precreate`|`->alipay->trade->precreate`|统一收单线下交易预创建
+`alipay.trade.app.pay`|`->alipay->trade->appPay`|APP支付2.0接口
+`alipay.trade.page.pay`|`->alipay->trade->pagePay`|统一收单下单并支付页面接口
+`alipay.trade.wap.pay`|`->alipay->trade->wapPay`|手机网站支付接口2.0接口
 
 ## [安全](Security.md)
 
