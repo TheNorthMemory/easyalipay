@@ -71,9 +71,9 @@ class BuilderTest extends TestCase
         self::assertIsArray($map);
         self::assertNotEmpty($map);
 
-        self::assertArrayHasKey(BuilderChainable::class, is_array($map) ? $map : []);
+        self::assertArrayHasKey(BuilderChainable::class, $map);
         if (method_exists($this, 'assertContainsEquals')) {
-            $this->assertContainsEquals(BuilderChainable::class, is_array($map) ? $map : []);
+            $this->assertContainsEquals(BuilderChainable::class, $map);
         }
 
         self::assertInstanceOf(ArrayAccess::class, $instance);
@@ -83,7 +83,7 @@ class BuilderTest extends TestCase
 
         self::assertIsArray($traits);
         self::assertNotEmpty($traits);
-        self::assertContains(\EasyAlipay\BuilderTrait::class, is_array($traits) ? $traits : []);
+        self::assertContains(\EasyAlipay\BuilderTrait::class, $traits);
 
         /** @phpstan-ignore-next-line */
         self::assertInstanceOf(BuilderChainable::class, $instance->alipay);
@@ -94,9 +94,7 @@ class BuilderTest extends TestCase
         /** @phpstan-ignore-next-line */
         self::assertInstanceOf(BuilderChainable::class, $instance->Alipay->Open->App->Qrcode->Create);
 
-        /** @phpstan-ignore-next-line */
         self::assertInstanceOf(BuilderChainable::class, $instance['AlipayOpenAppQrcodeCreate']);
-        /** @phpstan-ignore-next-line */
         self::assertInstanceOf(BuilderChainable::class, $instance['alipay.open.app.qrcode.create']);
 
         self::assertInstanceOf(BuilderChainable::class, $instance->chain('alipay.offline.material.image.upload'));

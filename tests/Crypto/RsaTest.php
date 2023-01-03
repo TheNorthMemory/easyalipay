@@ -43,7 +43,7 @@ class RsaTest extends TestCase
 
         preg_match(self::EVELOPE, $pkey ?: '', $matches);
 
-        return preg_replace('#\r|\n#', '', $matches['base64'] ?: '');
+        return preg_replace('#\r|\n#', '', $matches['base64'] ?: '') ?? '';
     }
 
     public function testFromPkcs8(): void
