@@ -1,3 +1,5 @@
+includes:
+	- phpstan.neon.dist
 parameters:
 	ignoreErrors:
 		-
