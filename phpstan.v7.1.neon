@@ -1,0 +1,17 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot access offset 'AlipayOpenAppQrcode…' on EasyAlipay\\\\BuilderChainable\\.$#"
+			count: 1
+			path: tests/BuilderTest.php
+
+		-
+			message: "#^Cannot access offset 'alipay\\.open\\.app…' on EasyAlipay\\\\BuilderChainable\\.$#"
+			count: 1
+			path: tests/BuilderTest.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertArrayHasKey\\(\\) expects array\\|ArrayAccess, array\\<string, string\\>\\|false given\\.$#"
+			count: 1
+			path: tests/BuilderTest.php
+
