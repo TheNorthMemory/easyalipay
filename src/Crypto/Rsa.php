@@ -26,6 +26,7 @@ use function str_replace;
 use function strlen;
 use function substr;
 use function wordwrap;
+use function chr;
 
 use UnexpectedValueException;
 
@@ -83,7 +84,7 @@ class Rsa
     {
         $num = strlen($thing);
         if ($num <= 0x7F) {
-            return sprintf('%c', $num);
+            return chr($num);
         }
 
         $tmp = ltrim(pack('N', $num), self::CHR_NUL);
