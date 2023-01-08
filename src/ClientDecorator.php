@@ -127,7 +127,7 @@ final class ClientDecorator implements ClientDecoratorInterface
     {
         return static function(callable $handler) use ($privateKey): callable {
             return static function(RequestInterface $request, array $options) use ($handler, $privateKey): PromiseInterface {
-                $data = ['biz_content' => json_encode($options['content'] ?? (object)[], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)];
+                $data = ['biz_content' => json_encode((object)($options['json'] ?? $options['content'] ?? []), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)];
                 ['params' => $params] = $options;
                 $params['timestamp'] = $params['timestamp'] ?? Formatter::localeDateTime();
 
@@ -147,7 +147,7 @@ final class ClientDecorator implements ClientDecoratorInterface
                 }
                 $modify += ['query' => Query::build($query, PHP_QUERY_RFC1738)];
 
-                unset($options['query'], $options['params'], $options['content']);
+                unset($options['query'], $options['params'], $options['json'], $options['content']);
 
                 return $handler(Utils::modifyRequest($request, $modify), $options);
             };
