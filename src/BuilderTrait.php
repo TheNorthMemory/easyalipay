@@ -49,6 +49,17 @@ trait BuilderTrait
     }
 
     /**
+     * Alias of sending a synchronous HTTP POST request.
+     *
+     * @param string $name - The `entryMethod` pipe string.
+     * @param array<string,mixed>[] $options - Request options to apply.
+     */
+    public function __call(string $name, array $options): ResponseInterface
+    {
+        return $this->{$name}->post(...$options);
+    }
+
+    /**
      * @inheritDoc
      */
     public function get(array ...$options): ResponseInterface
